@@ -5,27 +5,336 @@ date: "2024-10-10"
 output: "github_document"
 ---
 
-# load packages and dataset 
+# load packages and dataset
 ```{r}
 library (haven)
 library (dplyr)
 library (ggplot2)
+library (psych)
+library (car)
+library (multcomp)
 
-#load (change example)
-load("/Users/northlight/Desktop/PSY329 - My Data Project - ICPSR_38417 - Dataset/DS0001/38417-0001-Data.rda")
+#load Dataset
+load("ICPSR_38417/DS0001/38417-0001-Data.rda")
 
 ```
-
 
 ```{r}
 Selected_Dataset <- da38417.0001 %>%
-  select(Q17_1, Q19, Q20, Q21, Q22, Q117, Q65, Q55E, D2, HHR5, IDENTITY_1_R)
+  dplyr::select(Q17_1, Q19, Q20, Q21, Q22, Q117, Q65, Q55E, D2, HHR5, IDENTITY_1_R)
+```
 
+# Recode Variables
+```{r}
+#Q17_1: Please indicate the level of happiness, all things considered, in your relationship 
+Selected_Dataset$Q17_1 <- dplyr::recode(Selected_Dataset$Q17_1, "(1) Extremely unhappy" = 1, "(2) Fairly unhappy" = 2, "(3) A little unhappy" = 3, "(4) Happy" = 4, "(5) Very happy" = 5, "(6) Extremely happy" = 6, "(7) Perfect" = 7)
+
+#Q19: I have a warm and comfortable relationship with my spouse/partner
+Selected_Dataset$Q19 <- dplyr::recode(Selected_Dataset$Q19, "(1) Not at all true" = 1, "(2) A little true" = 2, "(3) Somewhat true" = 3, "(4) Mostly true" = 4, "(5) Almost completely true" = 5, "(6) Completely true" = 6)
+
+#Q20: How rewarding is your relationship with your spouse/partner? 
+Selected_Dataset$Q20 <- dplyr::recode(Selected_Dataset$Q20, "(1) Not at all rewarding" = 1, "(2) A little rewarding" = 2, "(3) Somewhat rewarding" = 3, "(4) Mostly rewarding" = 4, "(5) Almost completely rewarding" = 5, "(6) Completely rewarding" = 6)
+
+#Q21: In general, how satisfied are you with your relationship? 
+Selected_Dataset$Q21 <- dplyr::recode(Selected_Dataset$Q21, "(1) Not at all satisfied" = 1, "(2) A little satisfied" = 2, "(3) Somewhat satisfied" = 3, "(4) Mostly satisfied" = 4, "(5) Almost completely satisfied" = 5, "(6) Completely satisfied" = 6)
+
+#Q22: In general, how committed are you to your current spouse/partner?
+Selected_Dataset$COMMITMENT <- dplyr::recode(Selected_Dataset$Q22, "(1) Not at all committed" = 1, "(2) A little committed" = 2, "(3) Somewhat committed" = 3, "(4) Mostly committed" = 4, "(5) Almost completely committed" = 5, "(6) Completely committed" = 6)
+
+#Q117: How satisfied are you with your sexual relationship with your current spouse/partner? 
+Selected_Dataset$SEXUAL_SATISFACTION <- dplyr::recode(Selected_Dataset$Q117, "(1) Very dissatisfied" = 1, "(2) Somewhat dissatisfied" = 2, "(3) Neither satisfied or dissatisfied" = 3, "(4) Somewhat satisfied" = 4, "(5) Very satisfied" = 5)
+
+#Q65: In the past 30 days have you used antidepressant medication
+Selected_Dataset$ANTIDEPRESSANT_USE <- dplyr::recode(Selected_Dataset$Q65, "(1) Yes" = "Yes", "(2) No" = "No")
+
+#Q55E: I felt depressed
+Selected_Dataset$DEPRESSION_LEVEL <- dplyr::recode(Selected_Dataset$Q55E, "(1) Rarely or none of the time (Less than 1 day)" = "Rarely/None", "(2) Some or a little of the time (1-2 days)" = "Some", "(3) Occasionally or a moderate amount of time (3-4 days)" = "Occasionally", "(4) Most or all of the time (5-7 days)" = "Most/All")
+
+#D2: Which of the following best describes your gender?
+Selected_Dataset$GENDER <- dplyr::recode(Selected_Dataset$D2, "(1) Man" = "Men", "(2) Woman" = "Women", "(3) Transgender" = "Transgender","(5) Do not identify as any of the above (there is an option to specify at next question)" = "Other")
+
+#IDENTITY_1_R IDENTITY. Which of the following do you consider yourself to be? (select all that apply) 1. Heterosexual or "straight"
+Selected_Dataset$SEXUAL_IDENTITY <- dplyr::recode(Selected_Dataset$IDENTITY_1_R, "(1) Heterosexual" = "Heterosexual", "(-99) Valid Non-Response" = "Other")
+
+#Remove NA values
+Selected_Dataset <- na.omit(Selected_Dataset)
+
+```
+
+#Graphs for Recoded Variables
+```{r}
+
+#Q17_1: Please indicate the level of happiness, all things considered, in your relationship 
+#Grouped by GENDER
+ggplot(Selected_Dataset, aes(x = Q17_1)) + facet_wrap(~GENDER) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Relationship Happiness", x = "Happiness", y = "Frequency")
+
+#Grouped by SEXUAL_IDENTITY
+ggplot(Selected_Dataset, aes(x = Q17_1)) + facet_wrap(~SEXUAL_IDENTITY) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Relationship Happiness", x = "Happiness", y = "Frequency")
+
+#Q19: I have a warm and comfortable relationship with my spouse/partner
+#Grouped by GENDER
+ggplot(Selected_Dataset, aes(x = Q19)) + facet_wrap(~GENDER) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Warm and Comfortable Relationship", x = "Warmth", y = "Frequency")
+
+#Grouped by SEXUAL_IDENTITY
+ggplot(Selected_Dataset, aes(x = Q19)) + facet_wrap(~SEXUAL_IDENTITY) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Warm and Comfortable Relationship", x = "Warmth", y = "Frequency")
+
+#Q20: How rewarding is your relationship with your spouse/partner? 
+#Grouped by GENDER
+ggplot(Selected_Dataset, aes(x = Q20))  + facet_wrap(~GENDER) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Rewarding Relationship", x = "Reward", y = "Frequency")
+
+#Grouped by SEXUAL_IDENTITY
+ggplot(Selected_Dataset, aes(x = Q20)) + facet_wrap(~SEXUAL_IDENTITY) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Rewarding Relationship", x = "Reward", y = "Frequency")
+
+#Q21: In general, how satisfied are you with your relationship?
+#Grouped by GENDER
+ggplot(Selected_Dataset, aes(x = Q21))  + facet_wrap(~GENDER) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Relationship Satisfaction", x = "Satisfaction", y = "Frequency")
+
+#Grouped by SEXUAL_IDENTITY
+ggplot(Selected_Dataset, aes(x = Q21)) + facet_wrap(~SEXUAL_IDENTITY) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Relationship Satisfaction", x = "Satisfaction", y = "Frequency")
+
+#Q22: In general, how committed are you to your current spouse/partner? (Numeric)
+#Grouped by GENDER
+ggplot(Selected_Dataset, aes(x = COMMITMENT))  + facet_wrap(~GENDER) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Relationship Commitment", x = "Commitment", y = "Frequency")
+
+#Grouped by SEXUAL_IDENTITY
+ggplot(Selected_Dataset, aes(x = COMMITMENT)) + facet_wrap(~SEXUAL_IDENTITY) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Relationship Commitment", x = "Commitment", y = "Frequency")
+
+#Q117: How satisfied are you with your sexual relationship with your current spouse/partner? 
+#Grouped by GENDER
+ggplot(Selected_Dataset, aes(x = SEXUAL_SATISFACTION))  + facet_wrap(~GENDER) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Sexual Relationship Satisfaction", x = "Satisfaction", y = "Frequency")
+
+#Grouped by SEXUAL_IDENTITY
+ggplot(Selected_Dataset, aes(x = SEXUAL_SATISFACTION)) + facet_wrap(~SEXUAL_IDENTITY) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Sexual Relationship Satisfaction", x = "Satisfaction", y = "Frequency")
+
+#Q65: In the past 30 days have you used antidepressant medication?
+#Grouped by GENDER
+ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE))  + facet_wrap(~GENDER) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black", stat = "count") +
+  labs(title = "Antidepressant Use", x = "Use", y = "Frequency")
+
+#Grouped by SEXUAL_IDENTITY
+ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE)) + facet_wrap(~SEXUAL_IDENTITY) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black", stat = "count") +
+  labs(title = "Antidepressant Use", x = "Use", y = "Frequency")
 
 ```
 
 
+# Create Composite Variable
+```{r}
+#For Relationship Satisfaction I will produce one composite variable out of variables Q17_1, Q19, Q20, Q21
+#Mutate and create a new column. Use the average of each participants scores
+Selected_Dataset$Relationship_Satisfaction <- rowMeans(Selected_Dataset %>% dplyr::select(Q17_1, Q19, Q20, Q21), na.rm = TRUE)
+
+#plot the composite variable
+ggplot(Selected_Dataset, aes(x = Relationship_Satisfaction)) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Relationship Satisfaction Composite Variable", x = "Relationship Satisfaction", y = "Frequency")
+
+#Group By GENDER
+ggplot(Selected_Dataset, aes(x = Relationship_Satisfaction)) + facet_wrap(~GENDER) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Relationship Satisfaction Composite Variable", x = "Relationship Satisfaction", y = "Frequency")
+
+#Group By SEXUAL_IDENTITY
+ggplot(Selected_Dataset, aes(x = Relationship_Satisfaction)) + facet_wrap(~SEXUAL_IDENTITY) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Relationship Satisfaction Composite Variable", x = "Relationship Satisfaction", y = "Frequency")
+
+#Group By ANTIDEPRESSANT_USE
+ggplot(Selected_Dataset, aes(x = Relationship_Satisfaction)) + facet_wrap(~ANTIDEPRESSANT_USE) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Relationship Satisfaction Composite Variable", x = "Relationship Satisfaction", y = "Frequency")
+
+#Group By DEPRESSION_LEVEL
+ggplot(Selected_Dataset, aes(x = Relationship_Satisfaction)) + facet_wrap(~DEPRESSION_LEVEL) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Relationship Satisfaction Composite Variable", x = "Relationship Satisfaction", y = "Frequency")
+
+```
+
+#Check Normality of Distribution for each variable
+
+```{r}
+
+#Normality is not required for Large N due to the central limit theorem, but I will check for the sake of practice.
+
+kruskal.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$GENDER)
+kruskal.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$SEXUAL_IDENTITY)
+kruskal.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$ANTIDEPRESSANT_USE)
+kruskal.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$DEPRESSION_LEVEL)
+
+kruskal.test(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$GENDER)
+kruskal.test(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$SEXUAL_IDENTITY)
+kruskal.test(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$ANTIDEPRESSANT_USE)
+kruskal.test(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$DEPRESSION_LEVEL)
+
+```
+
+#Check for Equality of Variance
+
+```{r}
+#Levine's Test
+
+leveneTest(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$GENDER)
+# Fail to reject Null Hypothesis: Variances are equal
+
+leveneTest(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$SEXUAL_IDENTITY)
+# Reject Null Hypothesis: Variances are not equal -- Use Welch ANOVA 
+
+leveneTest(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$ANTIDEPRESSANT_USE)
+# Fail to reject Null Hypothesis: Variances are equal
+
+leveneTest(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$DEPRESSION_LEVEL)
+# Reject Null Hypothesis: Variances are not equal -- Use Welch ANOVA
+
+leveneTest(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$GENDER)
+# Reject Null Hypothesis: Variances are not equal -- Use Welch ANOVA 
+
+leveneTest(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$SEXUAL_IDENTITY)
+# Fail to reject Null Hypothesis: Variances are equal
+
+leveneTest(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$ANTIDEPRESSANT_USE)
+# Fail to reject Null Hypothesis: Variances are equal
+
+leveneTest(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$DEPRESSION_LEVEL)
+# Reject Null Hypothesis: Variances are not equal -- Use Welch ANOVA 
+
+```
+
+
+#Check Independent Observation Assumption
+
+Given the nature of the survey, I assume that they design of this survey means that respondents are all independent of each other.
+
+
+#Violated Assumptions and Fixes
+
+For the tests that do not pass the assumptions of homogeneity of variance, I use Welch’s ANOVA.
+
+#Data Analysis
+
+#Does Anti Depressant use impact Relationship Satisfaction?
+
+```{r}
+#Independent Samples T-Test
+t.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$ANTIDEPRESSANT_USE)
+
+ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE, y = Relationship_Satisfaction)) +
+  geom_boxplot() +
+  labs(title = "Relationship Satisfaction by Antidepressant Use", x = "Antidepressant Use", y = "Relationship Satisfaction")
+
+group_by(Selected_Dataset, ANTIDEPRESSANT_USE) %>%
+  summarise(mean = mean(Relationship_Satisfaction), sd = sd(Relationship_Satisfaction))
+
+```
+Result: Fail to reject the null hypothesis Anti-Depressants do not impact Relationship Satisfaction p = 0.3456
+
+#Does Anti Depressant use impact Sexual Satisfaction?
+
+```{r}
+#Independent Samples T-Test
+t.test(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$ANTIDEPRESSANT_USE)
+
+ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE, y = SEXUAL_SATISFACTION)) +
+  geom_boxplot()
+
+group_by(Selected_Dataset, ANTIDEPRESSANT_USE) %>%
+  summarise(mean = mean(SEXUAL_SATISFACTION), sd = sd(SEXUAL_SATISFACTION))
+
+```
+Result: Reject the null hypothesis Anti-Depressants do impact Sexaul Satisfaction p = 0.002436
+
+#Does Depression impact Relationship Satisfaction?
+
+```{r}
+#ANOVA
+oneway.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$DEPRESSION_LEVEL, var.equal = FALSE # Assuming UNEqual Variances
+            )
+
+ggplot(Selected_Dataset, aes(x = DEPRESSION_LEVEL, y = Relationship_Satisfaction)) +
+  geom_boxplot()
+
+group_by(Selected_Dataset, DEPRESSION_LEVEL) %>%
+  summarise(mean = mean(Relationship_Satisfaction), sd = sd(Relationship_Satisfaction))
+
+#Post Hoc Test
+TukeyHSD(aov(Relationship_Satisfaction ~ DEPRESSION_LEVEL, data = Selected_Dataset))
+```
+Result: Reject the null hypothesis Depression Level does impact Relationship Satisfaction  p = 2.2e-16
 
 
 
+#Does Depression impact Sexual Satisfaction?
 
+```{r}
+#ANOVA
+oneway.test(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$DEPRESSION_LEVEL, var.equal = FALSE # Assuming UNEqual Variances
+            )
+
+ggplot(Selected_Dataset, aes(x = DEPRESSION_LEVEL, y = SEXUAL_SATISFACTION)) +
+  geom_boxplot()
+
+group_by(Selected_Dataset, DEPRESSION_LEVEL) %>%
+  summarise(mean = mean(SEXUAL_SATISFACTION), sd = sd(SEXUAL_SATISFACTION))
+
+#Post Hoc Test
+TukeyHSD(aov(SEXUAL_SATISFACTION ~ DEPRESSION_LEVEL, data = Selected_Dataset))
+
+```
+Result: Reject the null hypothesis 
+Depression Level does impact Sexual Satisfaction  p = 2.2e-16
+
+
+#Does Sexual Identity impact Relationship Satisfaction
+
+```{r}
+#Independent Samples T-Test
+t.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$SEXUAL_IDENTITY)
+
+ggplot(Selected_Dataset, aes(x = SEXUAL_IDENTITY, y = Relationship_Satisfaction)) +
+  geom_boxplot()
+
+group_by(Selected_Dataset, SEXUAL_IDENTITY) %>%
+  summarise(mean = mean(Relationship_Satisfaction), sd = sd(Relationship_Satisfaction))
+
+```
+Fail to Reject Null Hypothesis: Sexual Identity does not impact Relationship Satisfaction p = 0.06882
+
+#Does Sexual Identity impact Sexual Satisfaction
+
+```{r}
+#Independent Samples T-Test
+t.test(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$SEXUAL_IDENTITY)
+
+ggplot(Selected_Dataset, aes(x = SEXUAL_IDENTITY, y = SEXUAL_SATISFACTION)) +
+  geom_boxplot()
+
+group_by(Selected_Dataset, SEXUAL_IDENTITY) %>%
+  summarise(mean = mean(SEXUAL_SATISFACTION), sd = sd(SEXUAL_SATISFACTION))
+```
+Reject the Null Hypothesis: Sexual Identity does impact Sexual Satisfaction p = 9.238e-10

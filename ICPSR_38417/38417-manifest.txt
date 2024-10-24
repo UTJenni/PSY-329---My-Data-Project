@@ -1,0 +1,172 @@
+File Manifest for ICPSR 38417
+
+Kamp Dush, Claire M., and Wendy D. Manning. National Couples' Health and
+Time Study (NCHAT), United States, 2020-2021. ICPSR38417-v7. Ann Arbor, MI:
+Inter-university Consortium for Political and Social Research
+[distributor], 2024-06-26. http://doi.org/10.3886/ICPSR38417.v7
+
+Details on the version history can be found below the file listings.
+
+
+Study-level Documentation
+
+    Filename                            Record  Record    Var.    Date        MD5
+                                        Length  Count     Count   Updated     Checksum
+
+    38417-descriptioncitation.pdf       -       -         -       2024-06-26  -
+
+    38417-related_literature.txt        -       -         -       daily       -
+
+    38417-manifest.txt                  -       -         -       daily       -
+
+    38417-Report.pdf                    -       -         -       2022-12-12  11b22eaae82dd55392788c2d77a4a2cd
+
+
+DS0001 Public-Use NCHAT Main Respondent Survey Data
+
+    Filename                            Record  Record    Var.    Date        MD5
+                                        Length  Count     Count   Updated     Checksum
+
+    38417-0001-Codebook-ICPSR.pdf       -       -         -       2024-06-26  6fe1e06af0ca12a5c62932db66c25af9
+
+    38417-0001-Data.dta                 -       3,639     1738    2024-06-26  b5e2235a1f6ff0343a314c03df64e6f8
+
+    38417-0001-Data.rda                 -       3,639     1738    2024-06-26  4730d684278c0fbc2563141a8b29a06d
+
+    38417-0001-Data.sav                 -       3,639     1738    2024-06-26  f5a4405c442f8f829371e711264045fd
+
+    38417-0001-Data.stc                 -       3,639     1738    2024-06-26  32b438bed7aa27190b3aea4ea3b2fe2d
+
+    38417-0001-Data.tsv                 -       3,639     1738    2024-06-26  322feeb4471efcf50359b4230300e760
+
+    38417-0001-Data.txt                 6677    3,639     1738    2024-06-26  22ff58553597da4c2c1389158febb567
+
+    38417-0001-Documentation-README.pdf -       -         -       2024-06-26  ae0e08a949638bdae763892a5ce40004
+
+    38417-0001-Questionnaire-NCHAT_English_MULTI.pdf -       -         -       2023-02-27  834bbcd9cbb3bef45e8957f6c09623a4
+
+    38417-0001-Questionnaire-NCHAT_Spanish_MULTI.pdf -       -         -       2023-02-27  e9e31110ebfc2e6d1c73919866b58a05
+
+    38417-0001-Setup.dct                -       -         -       2024-06-26  83186fc120b993ea8fc4f907395fc333
+
+    38417-0001-Setup.do                 -       -         -       2024-06-26  dded5be855c2f877c6f68bc8a429aecc
+
+    38417-0001-Setup.sas                -       -         -       2024-06-26  e318fb86d43d30ab5d55e44a04cdd208
+
+    38417-0001-Setup.sps                -       -         -       2024-06-26  b8a478f0f14c733d0651998d30fc03bc
+
+    38417-0001-Supplemental_syntax.do   -       -         -       2024-06-26  b8773d82c5c6eed9606f0ee1ee4920ae
+
+    38417-0001-Supplemental_syntax.sas  -       -         -       2024-06-26  35b9693daed09a1e483811b5ccfaf21c
+
+    38417-0001-Zipped_package.zip       -       -         -       2024-06-26  59e9d5c91718e4087142dc246ad88be5
+
+
+DS0002 Restricted-Use NCHAT Main Respondent Survey Data
+
+    Filename                            Record  Record    Var.    Date        MD5
+                                        Length  Count     Count   Updated     Checksum
+
+    38417-0002-Codebook-ICPSR.pdf       -       -         -       2024-06-26  2509d5e8f4aa00972678397bfdbb0d63
+
+    38417-0002-Documentation-README.pdf -       -         -       2024-06-26  4bbfb5a1da63d48269d0a6d9b27e38ff
+
+    38417-0002-Questionnaire-NCHAT_English_MULTI.pdf -       -         -       2023-02-27  834bbcd9cbb3bef45e8957f6c09623a4
+
+    38417-0002-Questionnaire-NCHAT_Spanish_MULTI.pdf -       -         -       2023-02-27  e9e31110ebfc2e6d1c73919866b58a05
+
+
+DS0003 Public-Use Main Respondent Time Diary Data
+
+    Filename                            Record  Record    Var.    Date        MD5
+                                        Length  Count     Count   Updated     Checksum
+
+    38417-0003-Codebook-ICPSR.pdf       -       -         -       2024-06-26  4b63a1360f46273de3f6089fb0cddde4
+
+    38417-0003-Data.dta                 -       29,116    478     2024-06-26  64b4bd0a0d701cb1efa6fc723c05a307
+
+    38417-0003-Data.rda                 -       29,116    478     2024-06-26  430cd6a806f1160e0c8683d5c5c0c1e5
+
+    38417-0003-Data.sav                 -       29,116    478     2024-06-26  8aab290206453612cfd23672b68a4992
+
+    38417-0003-Data.stc                 -       29,116    478     2024-06-26  c79b60231e78b40d29a39b482f529e91
+
+    38417-0003-Data.tsv                 -       29,116    478     2024-06-26  8c13a85d573ce9e969ab188795afe0a5
+
+    38417-0003-Data.txt                 1736    29,116    478     2024-06-26  4ffd3aaa773d77f9072ce5e7ac700bbf
+
+    38417-0003-Questionnaire-Time_Diary_English_MULTI.pdf -       -         -       2023-03-16  d36ae81fc5271e95da9f1087f7fc87a9
+
+    38417-0003-Questionnaire-Time_Diary_Spanish_MULTI.pdf -       -         -       2023-03-16  fba75bbb81289e4e114b839333bdf472
+
+    38417-0003-Setup.dct                -       -         -       2024-06-26  609847cc62113c8755a77fc887f6557d
+
+    38417-0003-Setup.do                 -       -         -       2024-06-26  1edbcf3843415ada04f8447b6a76e2b2
+
+    38417-0003-Setup.sas                -       -         -       2024-06-26  73951b6190d9fbd7d39ddd2b37599c90
+
+    38417-0003-Setup.sps                -       -         -       2024-06-26  fd77763dfb124760e9506af31f0e5892
+
+    38417-0003-Supplemental_syntax.do   -       -         -       2024-06-26  6510057e064a7527e018618d6b7b2707
+
+    38417-0003-Supplemental_syntax.sas  -       -         -       2024-06-26  ad747bdc1bc3dd73d46afd8d15bc46e7
+
+
+DS0004 Restricted-Use Main Respondent Time Diary Data
+
+    Filename                            Record  Record    Var.    Date        MD5
+                                        Length  Count     Count   Updated     Checksum
+
+    38417-0004-Codebook-ICPSR.pdf       -       -         -       2024-06-26  d95e74de14bd1f70f0a9ec5d852914b9
+
+    38417-0004-Questionnaire-Time_Diary_English_MULTI.pdf -       -         -       2023-03-16  d36ae81fc5271e95da9f1087f7fc87a9
+
+    38417-0004-Questionnaire-Time_Diary_Spanish_MULTI.pdf -       -         -       2023-03-16  fba75bbb81289e4e114b839333bdf472
+
+
+DS0005 NCHAT Partner Survey Data
+
+    Filename                            Record  Record    Var.    Date        MD5
+                                        Length  Count     Count   Updated     Checksum
+
+    38417-0005-Codebook-ICPSR.pdf       -       -         -       2024-06-26  888777705843d6ddf8acef71cc337af4
+
+    38417-0005-Questionnaire-NCHAT_English_MULTI.pdf -       -         -       2023-02-27  834bbcd9cbb3bef45e8957f6c09623a4
+
+    38417-0005-Questionnaire-NCHAT_Spanish_MULTI.pdf -       -         -       2023-02-27  e9e31110ebfc2e6d1c73919866b58a05
+
+
+DS0006 Partner Time Diary Data
+
+    Filename                            Record  Record    Var.    Date        MD5
+                                        Length  Count     Count   Updated     Checksum
+
+    38417-0006-Codebook-ICPSR.pdf       -       -         -       2024-06-26  4c4c59b8862aa38632d02b651dc16d1a
+
+    38417-0006-Questionnaire-Time_Diary_English_MULTI.pdf -       -         -       2023-03-16  d36ae81fc5271e95da9f1087f7fc87a9
+
+    38417-0006-Questionnaire-Time_Diary_Spanish_MULTI.pdf -       -         -       2023-03-16  fba75bbb81289e4e114b839333bdf472
+
+
+Version History
+
+2024-06-26 The Public-Use Main Respondent data file (DS1) was updated by
+the Principal Investigators to include 1 new AAPI variable. The computed
+AAPI variable includes respondents who endorsed Asian American Pacific
+Islander race/ethnicity categories in variables RACE_4_SUPP through
+RACE_14_SUPP. A syntax file has been made available in a zipped package for
+DS1 to document the AAPI variable creation. The ICPSR README and zipped
+package for DS2 were also re-released to update the README documentation.
+2023-12-11 Question text was added to the ICPSR Codebook and the Social
+Science Variables Database (SSVD) for all datasets.  2023-09-25 Both Main
+Respondent data files (DS1 and DS2) were updated by the Principal
+Investigators to include 11 new "IDENTITY" variables. These are recodes of
+the original "IDENTITY" variables.  2023-03-16 The Dataset 6: Partner Time
+Diary dataset has been added. Additionally, Dataset 3 and Dataset 4 have
+been re-released, but only the dataset names have been updated.  2023-02-27
+The Dataset 5: NCHAT Partner dataset has been added. Additionally, Dataset
+1 and Dataset 2 have been re-released, but only the dataset names have been
+updated.  2022-12-12 The Time Diary data set has been added with an
+accompanying questionnaire. Additionally, the NCHAT Survey data and
+documentation are being re-released to incorporate fileset name changes,
+but no changes were made to the data files.
