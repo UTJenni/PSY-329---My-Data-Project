@@ -1,17 +1,23 @@
-Dataset Project Prep - Lab 6
+Lab 8
 ================
 Jennifer Habicher
-2024-10-10
+2024-10-24
 
 # load packages and dataset
 
 ``` r
 library (haven)
+library (plyr)
 library (dplyr)
 ```
 
     ## 
     ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:plyr':
+    ## 
+    ##     arrange, count, desc, failwith, id, mutate, rename, summarise,
+    ##     summarize
 
     ## The following objects are masked from 'package:stats':
     ## 
@@ -77,6 +83,12 @@ library (multcomp)
     ##     geyser
 
 ``` r
+library (Rmisc)
+```
+
+    ## Loading required package: lattice
+
+``` r
 #load Dataset
 load("ICPSR_38417/DS0001/38417-0001-Data.rda")
 ```
@@ -108,16 +120,16 @@ Selected_Dataset$COMMITMENT <- dplyr::recode(Selected_Dataset$Q22, "(1) Not at a
 Selected_Dataset$SEXUAL_SATISFACTION <- dplyr::recode(Selected_Dataset$Q117, "(1) Very dissatisfied" = 1, "(2) Somewhat dissatisfied" = 2, "(3) Neither satisfied or dissatisfied" = 3, "(4) Somewhat satisfied" = 4, "(5) Very satisfied" = 5)
 
 #Q65: In the past 30 days have you used antidepressant medication
-Selected_Dataset$ANTIDEPRESSANT_USE <- dplyr::recode(Selected_Dataset$Q65, "(1) Yes" = "Yes", "(2) No" = "No")
+Selected_Dataset$ANTIDEPRESSANT_USE <- droplevels(dplyr::recode(Selected_Dataset$Q65, "(1) Yes" = "Yes", "(2) No" = "No"))
 
 #Q55E: I felt depressed
-Selected_Dataset$DEPRESSION_LEVEL <- dplyr::recode(Selected_Dataset$Q55E, "(1) Rarely or none of the time (Less than 1 day)" = "Rarely/None", "(2) Some or a little of the time (1-2 days)" = "Some", "(3) Occasionally or a moderate amount of time (3-4 days)" = "Occasionally", "(4) Most or all of the time (5-7 days)" = "Most/All")
+Selected_Dataset$DEPRESSION_LEVEL <- droplevels(dplyr::recode(Selected_Dataset$Q55E, "(1) Rarely or none of the time (Less than 1 day)" = "Rarely/None", "(2) Some or a little of the time (1-2 days)" = "Some", "(3) Occasionally or a moderate amount of time (3-4 days)" = "Occasionally", "(4) Most or all of the time (5-7 days)" = "Most/All"))
 
 #D2: Which of the following best describes your gender?
-Selected_Dataset$GENDER <- dplyr::recode(Selected_Dataset$D2, "(1) Man" = "Men", "(2) Woman" = "Women", "(3) Transgender" = "Transgender","(5) Do not identify as any of the above (there is an option to specify at next question)" = "Other")
+Selected_Dataset$GENDER <- droplevels(dplyr::recode(Selected_Dataset$D2, "(1) Man" = "Men", "(2) Woman" = "Women", "(3) Transgender" = "Transgender","(5) Do not identify as any of the above (there is an option to specify at next question)" = "Other"))
 
 #IDENTITY_1_R IDENTITY. Which of the following do you consider yourself to be? (select all that apply) 1. Heterosexual or "straight"
-Selected_Dataset$SEXUAL_IDENTITY <- dplyr::recode(Selected_Dataset$IDENTITY_1_R, "(1) Heterosexual" = "Heterosexual", "(-99) Valid Non-Response" = "Other")
+Selected_Dataset$SEXUAL_IDENTITY <- droplevels(dplyr::recode(Selected_Dataset$IDENTITY_1_R, "(1) Heterosexual" = "Heterosexual", "(-99) Valid Non-Response" = "Other"))
 
 #Remove NA values
 Selected_Dataset <- na.omit(Selected_Dataset)
@@ -136,8 +148,8 @@ ggplot(Selected_Dataset, aes(x = Q17_1)) + facet_wrap(~GENDER) +
 ![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 ``` r
-#Grouped by SEXUAL_IDENTITY
-ggplot(Selected_Dataset, aes(x = Q17_1)) + facet_wrap(~SEXUAL_IDENTITY) +
+#Grouped by ANTIDEPRESSANT_USE
+ggplot(Selected_Dataset, aes(x = Q17_1)) + facet_wrap(~ANTIDEPRESSANT_USE) +
   geom_histogram(binwidth = 1, fill = "blue", color = "black") +
   labs(title = "Relationship Happiness", x = "Happiness", y = "Frequency")
 ```
@@ -155,8 +167,8 @@ ggplot(Selected_Dataset, aes(x = Q19)) + facet_wrap(~GENDER) +
 ![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-4-3.png)<!-- -->
 
 ``` r
-#Grouped by SEXUAL_IDENTITY
-ggplot(Selected_Dataset, aes(x = Q19)) + facet_wrap(~SEXUAL_IDENTITY) +
+#Grouped by ANTIDEPRESSANT_USE
+ggplot(Selected_Dataset, aes(x = Q19)) + facet_wrap(~ANTIDEPRESSANT_USE) +
   geom_histogram(binwidth = 1, fill = "blue", color = "black") +
   labs(title = "Warm and Comfortable Relationship", x = "Warmth", y = "Frequency")
 ```
@@ -174,8 +186,8 @@ ggplot(Selected_Dataset, aes(x = Q20))  + facet_wrap(~GENDER) +
 ![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-4-5.png)<!-- -->
 
 ``` r
-#Grouped by SEXUAL_IDENTITY
-ggplot(Selected_Dataset, aes(x = Q20)) + facet_wrap(~SEXUAL_IDENTITY) +
+#Grouped by ANTIDEPRESSANT_USE
+ggplot(Selected_Dataset, aes(x = Q20)) + facet_wrap(~ANTIDEPRESSANT_USE) +
   geom_histogram(binwidth = 1, fill = "blue", color = "black") +
   labs(title = "Rewarding Relationship", x = "Reward", y = "Frequency")
 ```
@@ -193,8 +205,8 @@ ggplot(Selected_Dataset, aes(x = Q21))  + facet_wrap(~GENDER) +
 ![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-4-7.png)<!-- -->
 
 ``` r
-#Grouped by SEXUAL_IDENTITY
-ggplot(Selected_Dataset, aes(x = Q21)) + facet_wrap(~SEXUAL_IDENTITY) +
+#Grouped by ANTIDEPRESSANT_USE
+ggplot(Selected_Dataset, aes(x = Q21)) + facet_wrap(~ANTIDEPRESSANT_USE) +
   geom_histogram(binwidth = 1, fill = "blue", color = "black") +
   labs(title = "Relationship Satisfaction", x = "Satisfaction", y = "Frequency")
 ```
@@ -212,8 +224,8 @@ ggplot(Selected_Dataset, aes(x = COMMITMENT))  + facet_wrap(~GENDER) +
 ![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-4-9.png)<!-- -->
 
 ``` r
-#Grouped by SEXUAL_IDENTITY
-ggplot(Selected_Dataset, aes(x = COMMITMENT)) + facet_wrap(~SEXUAL_IDENTITY) +
+#Grouped by ANTIDEPRESSANT_USE
+ggplot(Selected_Dataset, aes(x = COMMITMENT)) + facet_wrap(~ANTIDEPRESSANT_USE) +
   geom_histogram(binwidth = 1, fill = "blue", color = "black") +
   labs(title = "Relationship Commitment", x = "Commitment", y = "Frequency")
 ```
@@ -231,38 +243,13 @@ ggplot(Selected_Dataset, aes(x = SEXUAL_SATISFACTION))  + facet_wrap(~GENDER) +
 ![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-4-11.png)<!-- -->
 
 ``` r
-#Grouped by SEXUAL_IDENTITY
-ggplot(Selected_Dataset, aes(x = SEXUAL_SATISFACTION)) + facet_wrap(~SEXUAL_IDENTITY) +
+#Grouped by ANTIDEPRESSANT_USE
+ggplot(Selected_Dataset, aes(x = SEXUAL_SATISFACTION)) + facet_wrap(~ANTIDEPRESSANT_USE) +
   geom_histogram(binwidth = 1, fill = "blue", color = "black") +
   labs(title = "Sexual Relationship Satisfaction", x = "Satisfaction", y = "Frequency")
 ```
 
 ![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-4-12.png)<!-- -->
-
-``` r
-#Q65: In the past 30 days have you used antidepressant medication?
-#Grouped by GENDER
-ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE))  + facet_wrap(~GENDER) +
-  geom_histogram(binwidth = 1, fill = "blue", color = "black", stat = "count") +
-  labs(title = "Antidepressant Use", x = "Use", y = "Frequency")
-```
-
-    ## Warning in geom_histogram(binwidth = 1, fill = "blue", color = "black", :
-    ## Ignoring unknown parameters: `binwidth`, `bins`, and `pad`
-
-![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-4-13.png)<!-- -->
-
-``` r
-#Grouped by SEXUAL_IDENTITY
-ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE)) + facet_wrap(~SEXUAL_IDENTITY) +
-  geom_histogram(binwidth = 1, fill = "blue", color = "black", stat = "count") +
-  labs(title = "Antidepressant Use", x = "Use", y = "Frequency")
-```
-
-    ## Warning in geom_histogram(binwidth = 1, fill = "blue", color = "black", :
-    ## Ignoring unknown parameters: `binwidth`, `bins`, and `pad`
-
-![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-4-14.png)<!-- -->
 
 # Create Composite Variable
 
@@ -289,37 +276,17 @@ ggplot(Selected_Dataset, aes(x = Relationship_Satisfaction)) + facet_wrap(~GENDE
 ![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
 
 ``` r
-#Group By SEXUAL_IDENTITY
-ggplot(Selected_Dataset, aes(x = Relationship_Satisfaction)) + facet_wrap(~SEXUAL_IDENTITY) +
-  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
-  labs(title = "Relationship Satisfaction Composite Variable", x = "Relationship Satisfaction", y = "Frequency")
-```
-
-![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-5-3.png)<!-- -->
-
-``` r
 #Group By ANTIDEPRESSANT_USE
 ggplot(Selected_Dataset, aes(x = Relationship_Satisfaction)) + facet_wrap(~ANTIDEPRESSANT_USE) +
   geom_histogram(binwidth = 1, fill = "blue", color = "black") +
   labs(title = "Relationship Satisfaction Composite Variable", x = "Relationship Satisfaction", y = "Frequency")
 ```
 
-![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-5-4.png)<!-- -->
-
-``` r
-#Group By DEPRESSION_LEVEL
-ggplot(Selected_Dataset, aes(x = Relationship_Satisfaction)) + facet_wrap(~DEPRESSION_LEVEL) +
-  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
-  labs(title = "Relationship Satisfaction Composite Variable", x = "Relationship Satisfaction", y = "Frequency")
-```
-
-![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-5-5.png)<!-- -->
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-5-3.png)<!-- -->
 
 \#Check Normality of Distribution for each variable
 
 ``` r
-#Normality is not required for Large N due to the central limit theorem, but I will check for the sake of practice.
-
 kruskal.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$GENDER)
 ```
 
@@ -328,16 +295,6 @@ kruskal.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$GENDE
     ## 
     ## data:  Selected_Dataset$Relationship_Satisfaction by Selected_Dataset$GENDER
     ## Kruskal-Wallis chi-squared = 2.5942, df = 3, p-value = 0.4585
-
-``` r
-kruskal.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$SEXUAL_IDENTITY)
-```
-
-    ## 
-    ##  Kruskal-Wallis rank sum test
-    ## 
-    ## data:  Selected_Dataset$Relationship_Satisfaction by Selected_Dataset$SEXUAL_IDENTITY
-    ## Kruskal-Wallis chi-squared = 1.098, df = 1, p-value = 0.2947
 
 ``` r
 kruskal.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$ANTIDEPRESSANT_USE)
@@ -350,16 +307,6 @@ kruskal.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$ANTID
     ## Kruskal-Wallis chi-squared = 0.6303, df = 1, p-value = 0.4272
 
 ``` r
-kruskal.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$DEPRESSION_LEVEL)
-```
-
-    ## 
-    ##  Kruskal-Wallis rank sum test
-    ## 
-    ## data:  Selected_Dataset$Relationship_Satisfaction by Selected_Dataset$DEPRESSION_LEVEL
-    ## Kruskal-Wallis chi-squared = 240.26, df = 3, p-value < 2.2e-16
-
-``` r
 kruskal.test(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$GENDER)
 ```
 
@@ -368,16 +315,6 @@ kruskal.test(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$GENDER)
     ## 
     ## data:  Selected_Dataset$SEXUAL_SATISFACTION by Selected_Dataset$GENDER
     ## Kruskal-Wallis chi-squared = 21.798, df = 3, p-value = 7.187e-05
-
-``` r
-kruskal.test(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$SEXUAL_IDENTITY)
-```
-
-    ## 
-    ##  Kruskal-Wallis rank sum test
-    ## 
-    ## data:  Selected_Dataset$SEXUAL_SATISFACTION by Selected_Dataset$SEXUAL_IDENTITY
-    ## Kruskal-Wallis chi-squared = 43.625, df = 1, p-value = 3.976e-11
 
 ``` r
 kruskal.test(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$ANTIDEPRESSANT_USE)
@@ -390,14 +327,56 @@ kruskal.test(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$ANTIDEPRESS
     ## Kruskal-Wallis chi-squared = 10.107, df = 1, p-value = 0.001477
 
 ``` r
-kruskal.test(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$DEPRESSION_LEVEL)
+kruskal.test(Selected_Dataset$COMMITMENT ~ Selected_Dataset$GENDER)
 ```
 
     ## 
     ##  Kruskal-Wallis rank sum test
     ## 
-    ## data:  Selected_Dataset$SEXUAL_SATISFACTION by Selected_Dataset$DEPRESSION_LEVEL
-    ## Kruskal-Wallis chi-squared = 147.5, df = 3, p-value < 2.2e-16
+    ## data:  Selected_Dataset$COMMITMENT by Selected_Dataset$GENDER
+    ## Kruskal-Wallis chi-squared = 30.757, df = 3, p-value = 9.561e-07
+
+``` r
+kruskal.test(Selected_Dataset$COMMITMENT ~ Selected_Dataset$ANTIDEPRESSANT_USE)
+```
+
+    ## 
+    ##  Kruskal-Wallis rank sum test
+    ## 
+    ## data:  Selected_Dataset$COMMITMENT by Selected_Dataset$ANTIDEPRESSANT_USE
+    ## Kruskal-Wallis chi-squared = 1.5121, df = 1, p-value = 0.2188
+
+\#Secondary Normality Check
+
+``` r
+table(Selected_Dataset$GENDER, Selected_Dataset$ANTIDEPRESSANT_USE)
+```
+
+    ##              
+    ##                Yes   No
+    ##   Men          214 1508
+    ##   Women        393 1269
+    ##   Transgender   12   16
+    ##   Other         32   64
+
+Since the tests for Normality has failed for Gender, I will merge
+Transgenger and Other to a single group called Other
+
+``` r
+# Merge Transgender and Other into a single group called Other
+Selected_Dataset$GENDER <- droplevels(dplyr::recode(Selected_Dataset$GENDER, "Transgender" = "Other"))
+
+table(Selected_Dataset$GENDER, Selected_Dataset$ANTIDEPRESSANT_USE)
+```
+
+    ##        
+    ##          Yes   No
+    ##   Men    214 1508
+    ##   Women  393 1269
+    ##   Other   44   80
+
+Verified that now all groups have enough N to satisfy Central Limit
+Theorem.
 
 \#Check for Equality of Variance
 
@@ -409,24 +388,11 @@ leveneTest(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$GENDER)
 
     ## Levene's Test for Homogeneity of Variance (center = median)
     ##         Df F value Pr(>F)
-    ## group    3  1.0426 0.3725
-    ##       3504
+    ## group    2  0.5282 0.5897
+    ##       3505
 
 ``` r
 # Fail to reject Null Hypothesis: Variances are equal
-
-leveneTest(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$SEXUAL_IDENTITY)
-```
-
-    ## Levene's Test for Homogeneity of Variance (center = median)
-    ##         Df F value    Pr(>F)    
-    ## group    1  11.011 0.0009152 ***
-    ##       3506                      
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-``` r
-# Reject Null Hypothesis: Variances are not equal -- Use Welch ANOVA 
 
 leveneTest(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$ANTIDEPRESSANT_USE)
 ```
@@ -439,44 +405,19 @@ leveneTest(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$ANTIDEP
 ``` r
 # Fail to reject Null Hypothesis: Variances are equal
 
-leveneTest(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$DEPRESSION_LEVEL)
-```
-
-    ## Levene's Test for Homogeneity of Variance (center = median)
-    ##         Df F value    Pr(>F)    
-    ## group    3  27.647 < 2.2e-16 ***
-    ##       3504                      
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-``` r
-# Reject Null Hypothesis: Variances are not equal -- Use Welch ANOVA
 
 leveneTest(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$GENDER)
 ```
 
     ## Levene's Test for Homogeneity of Variance (center = median)
     ##         Df F value  Pr(>F)  
-    ## group    3  2.8968 0.03385 *
-    ##       3504                  
+    ## group    2  3.9925 0.01854 *
+    ##       3505                  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 ``` r
 # Reject Null Hypothesis: Variances are not equal -- Use Welch ANOVA 
-
-leveneTest(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$SEXUAL_IDENTITY)
-```
-
-    ## Levene's Test for Homogeneity of Variance (center = median)
-    ##         Df F value  Pr(>F)  
-    ## group    1  3.0073 0.08298 .
-    ##       3506                  
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-``` r
-# Fail to reject Null Hypothesis: Variances are equal
 
 leveneTest(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$ANTIDEPRESSANT_USE)
 ```
@@ -489,19 +430,63 @@ leveneTest(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$ANTIDEPRESSAN
 ``` r
 # Fail to reject Null Hypothesis: Variances are equal
 
-leveneTest(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$DEPRESSION_LEVEL)
+
+leveneTest(Selected_Dataset$COMMITMENT ~ Selected_Dataset$GENDER)
 ```
 
     ## Levene's Test for Homogeneity of Variance (center = median)
-    ##         Df F value    Pr(>F)    
-    ## group    3  10.238 1.039e-06 ***
-    ##       3504                      
+    ##         Df F value   Pr(>F)    
+    ## group    2  11.097 1.57e-05 ***
+    ##       3505                     
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 ``` r
 # Reject Null Hypothesis: Variances are not equal -- Use Welch ANOVA 
+
+leveneTest(Selected_Dataset$COMMITMENT ~ Selected_Dataset$ANTIDEPRESSANT_USE)
 ```
+
+    ## Levene's Test for Homogeneity of Variance (center = median)
+    ##         Df F value Pr(>F)
+    ## group    1   2.029 0.1544
+    ##       3506
+
+``` r
+# Fail to reject Null Hypothesis: Variances are equal
+```
+
+Sexual Satisfaction and Commitment do not pass the assumption of
+homogeneity of variance. I will do a log transformation of the data
+
+``` r
+Selected_Dataset$SEXUAL_SATISFACTION <- log(Selected_Dataset$SEXUAL_SATISFACTION)
+Selected_Dataset$COMMITMENT <- log(Selected_Dataset$COMMITMENT)
+```
+
+Recheck for Equality of Variance
+
+``` r
+leveneTest(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$GENDER)
+```
+
+    ## Levene's Test for Homogeneity of Variance (center = median)
+    ##         Df F value   Pr(>F)   
+    ## group    2  5.8864 0.002805 **
+    ##       3505                    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
+leveneTest(Selected_Dataset$COMMITMENT ~ Selected_Dataset$GENDER)
+```
+
+    ## Levene's Test for Homogeneity of Variance (center = median)
+    ##         Df F value    Pr(>F)    
+    ## group    2  8.3808 0.0002338 ***
+    ##       3505                      
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 \#Check Independent Observation Assumption
 
@@ -510,280 +495,250 @@ means that respondents are all independent of each other.
 
 \#Violated Assumptions and Fixes
 
-For the tests that do not pass the assumptions of homogeneity of
-variance, I use Welch’s ANOVA.
+For the tests that do not pass the assumptions of normality, I merged
+the Trangsenger and Other groups into a single group called Other. This
+new group has a sufficiently large N to satisfy the Central Limit
+Theorem. For the tests that do not pass the assumptions of homogeneity
+of variance, I have transposed the data using a log transformation.
 
 \#Data Analysis
 
-\#Does Anti Depressant use impact Relationship Satisfaction?
+2x3 Design - IV: Antidepressants vs No Antidepressants - IV: Gender: Man
+vs Woman vs Other
+
+- DV: Relationship Satisfaction
+- DV: Sexual Satisfaction
+- DV: Commitment
 
 ``` r
-#Independent Samples T-Test
-t.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$ANTIDEPRESSANT_USE)
+#Relationship Satisfaction
+
+#descriptive Statistics
+group_by(Selected_Dataset, GENDER, ANTIDEPRESSANT_USE) %>%
+  dplyr::summarise(
+    mean = mean(Relationship_Satisfaction, na.rm = TRUE),
+    sd = sd(Relationship_Satisfaction, na.rm = TRUE)
+  )
 ```
 
-    ## 
-    ##  Welch Two Sample t-test
-    ## 
-    ## data:  Selected_Dataset$Relationship_Satisfaction by Selected_Dataset$ANTIDEPRESSANT_USE
-    ## t = -0.94371, df = 953.34, p-value = 0.3456
-    ## alternative hypothesis: true difference in means between group Yes and group No is not equal to 0
-    ## 95 percent confidence interval:
-    ##  -0.14743419  0.05168263
-    ## sample estimates:
-    ## mean in group Yes  mean in group No 
-    ##          4.686636          4.734512
+    ## `summarise()` has grouped output by 'GENDER'. You can override using the
+    ## `.groups` argument.
+
+    ## # A tibble: 6 × 4
+    ## # Groups:   GENDER [3]
+    ##   GENDER ANTIDEPRESSANT_USE  mean    sd
+    ##   <fct>  <fct>              <dbl> <dbl>
+    ## 1 Men    Yes                 4.51  1.27
+    ## 2 Men    No                  4.75  1.13
+    ## 3 Women  Yes                 4.77  1.12
+    ## 4 Women  No                  4.71  1.17
+    ## 5 Other  Yes                 4.82  1.12
+    ## 6 Other  No                  4.80  1.10
 
 ``` r
-ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE, y = Relationship_Satisfaction)) +
-  geom_boxplot() +
-  labs(title = "Relationship Satisfaction by Antidepressant Use", x = "Antidepressant Use", y = "Relationship Satisfaction")
+#2x3 MANOVA
+Satisfaction_Model <- aov(Relationship_Satisfaction ~  GENDER*ANTIDEPRESSANT_USE, data = Selected_Dataset)
+
+summary(Satisfaction_Model)
 ```
 
-![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+    ##                             Df Sum Sq Mean Sq F value Pr(>F)  
+    ## GENDER                       2      1   0.484   0.365 0.6940  
+    ## ANTIDEPRESSANT_USE           1      2   1.508   1.140 0.2858  
+    ## GENDER:ANTIDEPRESSANT_USE    2     10   5.223   3.946 0.0194 *
+    ## Residuals                 3502   4635   1.324                 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 ``` r
-group_by(Selected_Dataset, ANTIDEPRESSANT_USE) %>%
-  summarise(mean = mean(Relationship_Satisfaction), sd = sd(Relationship_Satisfaction))
-```
-
-    ## # A tibble: 2 × 3
-    ##   ANTIDEPRESSANT_USE  mean    sd
-    ##   <fct>              <dbl> <dbl>
-    ## 1 Yes                 4.69  1.17
-    ## 2 No                  4.73  1.15
-
-Result: Fail to reject the null hypothesis Anti-Depressants do not
-impact Relationship Satisfaction p = 0.3456
-
-\#Does Anti Depressant use impact Sexual Satisfaction?
-
-``` r
-#Independent Samples T-Test
-t.test(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$ANTIDEPRESSANT_USE)
-```
-
-    ## 
-    ##  Welch Two Sample t-test
-    ## 
-    ## data:  Selected_Dataset$SEXUAL_SATISFACTION by Selected_Dataset$ANTIDEPRESSANT_USE
-    ## t = -3.0392, df = 972.47, p-value = 0.002436
-    ## alternative hypothesis: true difference in means between group Yes and group No is not equal to 0
-    ## 95 percent confidence interval:
-    ##  -0.30403597 -0.06545562
-    ## sample estimates:
-    ## mean in group Yes  mean in group No 
-    ##          3.245776          3.430522
-
-``` r
-ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE, y = SEXUAL_SATISFACTION)) +
-  geom_boxplot()
-```
-
-![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
-
-``` r
-group_by(Selected_Dataset, ANTIDEPRESSANT_USE) %>%
-  summarise(mean = mean(SEXUAL_SATISFACTION), sd = sd(SEXUAL_SATISFACTION))
-```
-
-    ## # A tibble: 2 × 3
-    ##   ANTIDEPRESSANT_USE  mean    sd
-    ##   <fct>              <dbl> <dbl>
-    ## 1 Yes                 3.25  1.40
-    ## 2 No                  3.43  1.41
-
-Result: Reject the null hypothesis Anti-Depressants do impact Sexaul
-Satisfaction p = 0.002436
-
-\#Does Depression impact Relationship Satisfaction?
-
-``` r
-#ANOVA
-oneway.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$DEPRESSION_LEVEL, var.equal = FALSE # Assuming UNEqual Variances
-            )
-```
-
-    ## 
-    ##  One-way analysis of means (not assuming equal variances)
-    ## 
-    ## data:  Selected_Dataset$Relationship_Satisfaction and Selected_Dataset$DEPRESSION_LEVEL
-    ## F = 81.954, num df = 3.00, denom df = 731.72, p-value < 2.2e-16
-
-``` r
-ggplot(Selected_Dataset, aes(x = DEPRESSION_LEVEL, y = Relationship_Satisfaction)) +
-  geom_boxplot()
-```
-
-![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
-
-``` r
-group_by(Selected_Dataset, DEPRESSION_LEVEL) %>%
-  summarise(mean = mean(Relationship_Satisfaction), sd = sd(Relationship_Satisfaction))
-```
-
-    ## # A tibble: 4 × 3
-    ##   DEPRESSION_LEVEL  mean    sd
-    ##   <fct>            <dbl> <dbl>
-    ## 1 Rarely/None       4.98  1.02
-    ## 2 Some              4.56  1.14
-    ## 3 Occasionally      4.29  1.24
-    ## 4 Most/All          3.99  1.42
-
-``` r
-#Post Hoc Test
-TukeyHSD(aov(Relationship_Satisfaction ~ DEPRESSION_LEVEL, data = Selected_Dataset))
+# Post Hoc
+TukeyHSD(Satisfaction_Model, which = "GENDER:ANTIDEPRESSANT_USE")
 ```
 
     ##   Tukey multiple comparisons of means
     ##     95% family-wise confidence level
     ## 
-    ## Fit: aov(formula = Relationship_Satisfaction ~ DEPRESSION_LEVEL, data = Selected_Dataset)
+    ## Fit: aov(formula = Relationship_Satisfaction ~ GENDER * ANTIDEPRESSANT_USE, data = Selected_Dataset)
     ## 
-    ## $DEPRESSION_LEVEL
-    ##                                diff        lwr         upr     p adj
-    ## Some-Rarely/None         -0.4224919 -0.5362464 -0.30873734 0.0000000
-    ## Occasionally-Rarely/None -0.6909124 -0.8453343 -0.53649049 0.0000000
-    ## Most/All-Rarely/None     -0.9960472 -1.1959676 -0.79612681 0.0000000
-    ## Occasionally-Some        -0.2684206 -0.4371926 -0.09964849 0.0002600
-    ## Most/All-Some            -0.5735553 -0.7847568 -0.36235392 0.0000000
-    ## Most/All-Occasionally    -0.3051348 -0.5407448 -0.06952477 0.0048841
-
-Result: Reject the null hypothesis Depression Level does impact
-Relationship Satisfaction p = 2.2e-16
-
-\#Does Depression impact Sexual Satisfaction?
+    ## $`GENDER:ANTIDEPRESSANT_USE`
+    ##                            diff          lwr        upr     p adj
+    ## Women:Yes-Men:Yes    0.26207462 -0.016612113 0.54076136 0.0792162
+    ## Other:Yes-Men:Yes    0.31685429 -0.226148103 0.85985668 0.5560028
+    ## Men:No-Men:Yes       0.24216174  0.002535635 0.48178785 0.0459046
+    ## Women:No-Men:Yes     0.20575661 -0.036657553 0.44817078 0.1494779
+    ## Other:No-Men:Yes     0.29611565 -0.133764010 0.72599532 0.3633898
+    ## Other:Yes-Women:Yes  0.05477967 -0.466707014 0.57626635 0.9996785
+    ## Men:No-Women:Yes    -0.01991288 -0.205701553 0.16587579 0.9996452
+    ## Women:No-Women:Yes  -0.05631801 -0.245689041 0.13305302 0.9583930
+    ## Other:No-Women:Yes   0.03404103 -0.368318615 0.43640068 0.9998891
+    ## Men:No-Other:Yes    -0.07469255 -0.576392392 0.42700729 0.9982511
+    ## Women:No-Other:Yes  -0.11109768 -0.614135142 0.39193978 0.9888337
+    ## Other:No-Other:Yes  -0.02073864 -0.636432218 0.59495495 0.9999989
+    ## Women:No-Men:No     -0.03640513 -0.161368168 0.08855791 0.9618868
+    ## Other:No-Men:No      0.05395391 -0.322407163 0.43031499 0.9985418
+    ## Other:No-Women:No    0.09035904 -0.287783279 0.46850136 0.9840372
 
 ``` r
-#ANOVA
-oneway.test(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$DEPRESSION_LEVEL, var.equal = FALSE # Assuming UNEqual Variances
-            )
-```
-
-    ## 
-    ##  One-way analysis of means (not assuming equal variances)
-    ## 
-    ## data:  Selected_Dataset$SEXUAL_SATISFACTION and Selected_Dataset$DEPRESSION_LEVEL
-    ## F = 49.159, num df = 3.00, denom df = 761.05, p-value < 2.2e-16
-
-``` r
-ggplot(Selected_Dataset, aes(x = DEPRESSION_LEVEL, y = SEXUAL_SATISFACTION)) +
-  geom_boxplot()
-```
-
-![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
-
-``` r
-group_by(Selected_Dataset, DEPRESSION_LEVEL) %>%
-  summarise(mean = mean(SEXUAL_SATISFACTION), sd = sd(SEXUAL_SATISFACTION))
-```
-
-    ## # A tibble: 4 × 3
-    ##   DEPRESSION_LEVEL  mean    sd
-    ##   <fct>            <dbl> <dbl>
-    ## 1 Rarely/None       3.64  1.36
-    ## 2 Some              3.21  1.38
-    ## 3 Occasionally      3.01  1.38
-    ## 4 Most/All          2.79  1.50
-
-``` r
-#Post Hoc Test
-TukeyHSD(aov(SEXUAL_SATISFACTION ~ DEPRESSION_LEVEL, data = Selected_Dataset))
-```
-
-    ##   Tukey multiple comparisons of means
-    ##     95% family-wise confidence level
-    ## 
-    ## Fit: aov(formula = SEXUAL_SATISFACTION ~ DEPRESSION_LEVEL, data = Selected_Dataset)
-    ## 
-    ## $DEPRESSION_LEVEL
-    ##                                diff        lwr         upr     p adj
-    ## Some-Rarely/None         -0.4300526 -0.5715797 -0.28852549 0.0000000
-    ## Occasionally-Rarely/None -0.6277035 -0.8198268 -0.43558025 0.0000000
-    ## Most/All-Rarely/None     -0.8498253 -1.0985553 -0.60109529 0.0000000
-    ## Occasionally-Some        -0.1976509 -0.4076279  0.01232603 0.0736315
-    ## Most/All-Some            -0.4197727 -0.6825379 -0.15700743 0.0002406
-    ## Most/All-Occasionally    -0.2221217 -0.5152548  0.07101133 0.2084415
-
-Result: Reject the null hypothesis Depression Level does impact Sexual
-Satisfaction p = 2.2e-16
-
-\#Does Sexual Identity impact Relationship Satisfaction
-
-``` r
-#Independent Samples T-Test
-t.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$SEXUAL_IDENTITY)
-```
-
-    ## 
-    ##  Welch Two Sample t-test
-    ## 
-    ## data:  Selected_Dataset$Relationship_Satisfaction by Selected_Dataset$SEXUAL_IDENTITY
-    ## t = 1.8202, df = 3316.8, p-value = 0.06882
-    ## alternative hypothesis: true difference in means between group Other and group Heterosexual is not equal to 0
-    ## 95 percent confidence interval:
-    ##  -0.005454972  0.146828525
-    ## sample estimates:
-    ##        mean in group Other mean in group Heterosexual 
-    ##                   4.766633                   4.695946
-
-``` r
-ggplot(Selected_Dataset, aes(x = SEXUAL_IDENTITY, y = Relationship_Satisfaction)) +
-  geom_boxplot()
+#Plot
+ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE, y = Relationship_Satisfaction, fill = GENDER)
+       ) + geom_boxplot() + labs(title = "Relationship Satisfaction by Antidepressant Use", x = "Antidepressant Use", y = "Relationship Satisfaction")
 ```
 
 ![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+Results: Main Effects are not significant - Fail to reject the null
+hypothesis. At least one Interaction between Anti-Depressant Use and
+Gender is significant p = .0459046
 
 ``` r
-group_by(Selected_Dataset, SEXUAL_IDENTITY) %>%
-  summarise(mean = mean(Relationship_Satisfaction), sd = sd(Relationship_Satisfaction))
+#Sexual Satisfaction
+
+#descriptive Statistics
+group_by(Selected_Dataset, GENDER, ANTIDEPRESSANT_USE) %>%
+  dplyr::summarise(
+    mean = mean(SEXUAL_SATISFACTION, na.rm = TRUE),
+    sd = sd(SEXUAL_SATISFACTION, na.rm = TRUE)
+  )
 ```
 
-    ## # A tibble: 2 × 3
-    ##   SEXUAL_IDENTITY  mean    sd
-    ##   <fct>           <dbl> <dbl>
-    ## 1 Other            4.77  1.09
-    ## 2 Heterosexual     4.70  1.19
+    ## `summarise()` has grouped output by 'GENDER'. You can override using the
+    ## `.groups` argument.
 
-Fail to Reject Null Hypothesis: Sexual Identity does not impact
-Relationship Satisfaction p = 0.06882
-
-\#Does Sexual Identity impact Sexual Satisfaction
+    ## # A tibble: 6 × 4
+    ## # Groups:   GENDER [3]
+    ##   GENDER ANTIDEPRESSANT_USE  mean    sd
+    ##   <fct>  <fct>              <dbl> <dbl>
+    ## 1 Men    Yes                0.921 0.600
+    ## 2 Men    No                 1.09  0.541
+    ## 3 Women  Yes                1.13  0.495
+    ## 4 Women  No                 1.14  0.522
+    ## 5 Other  Yes                1.03  0.472
+    ## 6 Other  No                 1.13  0.534
 
 ``` r
-#Independent Samples T-Test
-t.test(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$SEXUAL_IDENTITY)
+#3x2 ANOVA
+Sexual_Satisfaction_Model <- aov(SEXUAL_SATISFACTION ~ GENDER * ANTIDEPRESSANT_USE, data = Selected_Dataset)
+
+summary(Sexual_Satisfaction_Model)
 ```
 
-    ## 
-    ##  Welch Two Sample t-test
-    ## 
-    ## data:  Selected_Dataset$SEXUAL_SATISFACTION by Selected_Dataset$SEXUAL_IDENTITY
-    ## t = -6.1403, df = 3237.9, p-value = 9.238e-10
-    ## alternative hypothesis: true difference in means between group Other and group Heterosexual is not equal to 0
-    ## 95 percent confidence interval:
-    ##  -0.3854658 -0.1988758
-    ## sample estimates:
-    ##        mean in group Other mean in group Heterosexual 
-    ##                   3.226748                   3.518919
+    ##                             Df Sum Sq Mean Sq F value   Pr(>F)    
+    ## GENDER                       2    4.4  2.2235   7.859 0.000393 ***
+    ## ANTIDEPRESSANT_USE           1    3.0  2.9615  10.468 0.001226 ** 
+    ## GENDER:ANTIDEPRESSANT_USE    2    2.7  1.3459   4.757 0.008645 ** 
+    ## Residuals                 3502  990.8  0.2829                     
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 ``` r
-ggplot(Selected_Dataset, aes(x = SEXUAL_IDENTITY, y = SEXUAL_SATISFACTION)) +
-  geom_boxplot()
+# Post Hoc
+TukeyHSD(Sexual_Satisfaction_Model, which = "GENDER:ANTIDEPRESSANT_USE")
+```
+
+    ##   Tukey multiple comparisons of means
+    ##     95% family-wise confidence level
+    ## 
+    ## Fit: aov(formula = SEXUAL_SATISFACTION ~ GENDER * ANTIDEPRESSANT_USE, data = Selected_Dataset)
+    ## 
+    ## $`GENDER:ANTIDEPRESSANT_USE`
+    ##                             diff          lwr        upr     p adj
+    ## Women:Yes-Men:Yes    0.207582252  0.078739522 0.33642498 0.0000660
+    ## Other:Yes-Men:Yes    0.112897206 -0.138144202 0.36393861 0.7948771
+    ## Men:No-Men:Yes       0.168053922  0.057269742 0.27883810 0.0002266
+    ## Women:No-Men:Yes     0.223394870  0.111321711 0.33546803 0.0000002
+    ## Other:No-Men:Yes     0.213195920  0.014453525 0.41193831 0.0271735
+    ## Other:Yes-Women:Yes -0.094685046 -0.335779288 0.14640920 0.8733491
+    ## Men:No-Women:Yes    -0.039528329 -0.125422333 0.04636567 0.7784345
+    ## Women:No-Women:Yes   0.015812618 -0.071737585 0.10336282 0.9956135
+    ## Other:No-Women:Yes   0.005613668 -0.180405645 0.19163298 0.9999993
+    ## Men:No-Other:Yes     0.055156716 -0.176789655 0.28710309 0.9843819
+    ## Women:No-Other:Yes   0.110497664 -0.122067117 0.34306245 0.7540913
+    ## Other:No-Other:Yes   0.100298714 -0.184349357 0.38494678 0.9165351
+    ## Women:No-Men:No      0.055340947 -0.002432089 0.11311398 0.0694617
+    ## Other:No-Men:No      0.045141997 -0.128857630 0.21914162 0.9769673
+    ## Other:No-Women:No   -0.010198950 -0.185022085 0.16462418 0.9999824
+
+``` r
+#Plot
+ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE, y = SEXUAL_SATISFACTION, fill = GENDER)
+       ) + geom_boxplot() + labs(title = "Sexual Satisfaction by Antidepressant Use", x = "Antidepressant Use", y = "Sexual Satisfaction")
 ```
 
 ![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ``` r
-group_by(Selected_Dataset, SEXUAL_IDENTITY) %>%
-  summarise(mean = mean(SEXUAL_SATISFACTION), sd = sd(SEXUAL_SATISFACTION))
+#Commitment
+
+#descriptive Statistics
+group_by(Selected_Dataset, GENDER, ANTIDEPRESSANT_USE ) %>%
+  dplyr::summarise(
+    mean = mean(COMMITMENT, na.rm = TRUE),
+    sd = sd(COMMITMENT, na.rm = TRUE)
+  )
 ```
 
-    ## # A tibble: 2 × 3
-    ##   SEXUAL_IDENTITY  mean    sd
-    ##   <fct>           <dbl> <dbl>
-    ## 1 Other            3.23  1.37
-    ## 2 Heterosexual     3.52  1.42
+    ## `summarise()` has grouped output by 'GENDER'. You can override using the
+    ## `.groups` argument.
 
-Reject the Null Hypothesis: Sexual Identity does impact Sexual
-Satisfaction p = 9.238e-10
+    ## # A tibble: 6 × 4
+    ## # Groups:   GENDER [3]
+    ##   GENDER ANTIDEPRESSANT_USE  mean    sd
+    ##   <fct>  <fct>              <dbl> <dbl>
+    ## 1 Men    Yes                 1.63 0.314
+    ## 2 Men    No                  1.70 0.220
+    ## 3 Women  Yes                 1.73 0.175
+    ## 4 Women  No                  1.72 0.215
+    ## 5 Other  Yes                 1.69 0.182
+    ## 6 Other  No                  1.67 0.317
+
+``` r
+#3x2 ANOVA
+Commitment_Model <- aov(COMMITMENT ~ GENDER* ANTIDEPRESSANT_USE , data = Selected_Dataset)
+
+summary(Commitment_Model)
+```
+
+    ##                             Df Sum Sq Mean Sq F value   Pr(>F)    
+    ## GENDER                       2   0.84  0.4191   8.413 0.000226 ***
+    ## ANTIDEPRESSANT_USE           1   0.15  0.1501   3.014 0.082656 .  
+    ## GENDER:ANTIDEPRESSANT_USE    2   0.68  0.3396   6.816 0.001110 ** 
+    ## Residuals                 3502 174.45  0.0498                     
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
+# Post Hoc
+TukeyHSD(Commitment_Model, which = "GENDER:ANTIDEPRESSANT_USE")
+```
+
+    ##   Tukey multiple comparisons of means
+    ##     95% family-wise confidence level
+    ## 
+    ## Fit: aov(formula = COMMITMENT ~ GENDER * ANTIDEPRESSANT_USE, data = Selected_Dataset)
+    ## 
+    ## $`GENDER:ANTIDEPRESSANT_USE`
+    ##                             diff          lwr         upr     p adj
+    ## Women:Yes-Men:Yes    0.094086923  0.040022639 0.148151207 0.0000108
+    ## Other:Yes-Men:Yes    0.053402312 -0.051938315 0.158742939 0.6990497
+    ## Men:No-Men:Yes       0.065060165  0.018573511 0.111546819 0.0009504
+    ## Women:No-Men:Yes     0.084279155  0.037251627 0.131306683 0.0000050
+    ## Other:No-Men:Yes     0.037568267 -0.045826934 0.120963467 0.7936899
+    ## Other:Yes-Women:Yes -0.040684611 -0.141851262 0.060482041 0.8617393
+    ## Men:No-Women:Yes    -0.029026759 -0.065069132 0.007015615 0.1957058
+    ## Women:No-Women:Yes  -0.009807768 -0.046545107 0.026929571 0.9738777
+    ## Other:No-Women:Yes  -0.056518657 -0.134575067 0.021537753 0.3062952
+    ## Men:No-Other:Yes     0.011657852 -0.085670220 0.108985924 0.9993895
+    ## Women:No-Other:Yes   0.030876843 -0.066710723 0.128464408 0.9460492
+    ## Other:No-Other:Yes  -0.015834046 -0.135276518 0.103608426 0.9990007
+    ## Women:No-Men:No      0.019218990 -0.005023416 0.043461397 0.2107579
+    ## Other:No-Men:No     -0.027491898 -0.100504673 0.045520877 0.8919590
+    ## Other:No-Women:No   -0.046710889 -0.120069219 0.026647442 0.4557231
+
+``` r
+#Plot
+ggplot(Commitment_Model, aes(x = ANTIDEPRESSANT_USE, y = COMMITMENT, fill = GENDER)
+       ) + geom_boxplot() + labs(title = "Commitment by Antidepressant Use", x = "Antidepressant Use", y = "Relationship Satisfaction")
+```
+
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
+\#Results
