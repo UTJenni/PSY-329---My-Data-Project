@@ -1,7 +1,7 @@
-Lab 8
+Lab 10
 ================
 Jennifer Habicher
-2024-10-24
+2024-11-14
 
 # load packages and dataset
 
@@ -87,6 +87,45 @@ library (Rmisc)
 ```
 
     ## Loading required package: lattice
+
+``` r
+library (bruceR)
+```
+
+    ## 
+    ## bruceR (v2024.6)
+    ## Broadly Useful Convenient and Efficient R functions
+    ## 
+    ## Packages also loaded:
+    ## ✔ data.table ✔ emmeans
+    ## ✔ dplyr      ✔ lmerTest
+    ## ✔ tidyr      ✔ effectsize
+    ## ✔ stringr    ✔ performance
+    ## ✔ ggplot2    ✔ interactions
+    ## 
+    ## Main functions of `bruceR`:
+    ## cc()             Describe()  TTEST()
+    ## add()            Freq()      MANOVA()
+    ## .mean()          Corr()      EMMEANS()
+    ## set.wd()         Alpha()     PROCESS()
+    ## import()         EFA()       model_summary()
+    ## print_table()    CFA()       lavaan_summary()
+    ## 
+    ## For full functionality, please install all dependencies:
+    ## install.packages("bruceR", dep=TRUE)
+    ## 
+    ## Online documentation:
+    ## https://psychbruce.github.io/bruceR
+    ## 
+    ## To use this package in publications, please cite:
+    ## Bao, H.-W.-S. (2024). bruceR: Broadly useful convenient and efficient R functions (Version 2024.6) [Computer software]. https://CRAN.R-project.org/package=bruceR
+
+    ## 
+    ## These packages are dependencies of `bruceR` but not installed:
+    ## - pacman, openxlsx, ggtext, lmtest, vars, phia, MuMIn, GGally
+    ## 
+    ## ***** Install all dependencies *****
+    ## install.packages("bruceR", dep=TRUE)
 
 ``` r
 #load Dataset
@@ -741,4 +780,84 @@ ggplot(Commitment_Model, aes(x = ANTIDEPRESSANT_USE, y = COMMITMENT, fill = GEND
 
 ![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
-\#Results
+# Reliability for Relationship Satisfaction
+
+``` r
+#Cronbach's Alpha
+Alpha(Selected_Dataset, vars = c("Q17_1", "Q19", "Q20", "Q21"))
+```
+
+    ## 
+    ## Reliability Analysis
+    ## 
+    ## Summary:
+    ## Total Items: 4
+    ## Scale Range: 1 ~ 7
+    ## Total Cases: 3508
+    ## Valid Cases: 3508 (100.0%)
+    ## 
+    ## Scale Statistics:
+    ## Mean = 4.726
+    ## S.D. = 1.151
+    ## Cronbach’s α = 0.885
+    ## McDonald’s ω = 0.907
+    ## 
+    ## Item Statistics (Cronbach’s α If Item Deleted):
+    ## ────────────────────────────────────────────────
+    ##         Mean    S.D. Item-Rest Cor. Cronbach’s α
+    ## ────────────────────────────────────────────────
+    ## Q17_1  4.653 (1.565)          0.553        0.943
+    ## Q19    4.921 (1.243)          0.824        0.826
+    ## Q20    4.639 (1.267)          0.848        0.816
+    ## Q21    4.689 (1.239)          0.837        0.821
+    ## ────────────────────────────────────────────────
+    ## Item-Rest Cor. = Corrected Item-Total Correlation
+
+\#Factor Analysis for Relationship Satisfaction
+
+``` r
+#Factor Analysis
+EFA(Selected_Dataset, vars = c("Q17_1", "Q19", "Q20", "Q21"), method = "pa", plot.scree = TRUE, nfactors = c("parallel"))
+```
+
+    ## 
+    ## Explanatory Factor Analysis
+    ## 
+    ## Summary:
+    ## Total Items: 4
+    ## Scale Range: 1 ~ 7
+    ## Total Cases: 3508
+    ## Valid Cases: 3508 (100.0%)
+    ## 
+    ## Extraction Method:
+    ## - Principal Axis Factor Analysis
+    ## Rotation Method:
+    ## - (Only one component was extracted. The solution was not rotated.)
+    ## 
+    ## KMO and Bartlett's Test:
+    ## - Kaiser-Meyer-Olkin (KMO) Measure of Sampling Adequacy: MSA = 0.821
+    ## - Bartlett's Test of Sphericity: Approx. χ²(6) = 11037.33, p < 1e-99 ***
+    ## 
+    ## Total Variance Explained:
+    ## ───────────────────────────────────────────────────────────────────────────────
+    ##           Eigenvalue Variance % Cumulative % SS Loading Variance % Cumulative %
+    ## ───────────────────────────────────────────────────────────────────────────────
+    ## Factor 1       3.087     77.163       77.163      2.863     71.574       71.574
+    ## Factor 2       0.605     15.132       92.295                                   
+    ## Factor 3       0.182      4.555       96.850                                   
+    ## Factor 4       0.126      3.150      100.000                                   
+    ## ───────────────────────────────────────────────────────────────────────────────
+    ## 
+    ## Factor Loadings (Sorted by Size):
+    ## ────────────────────────
+    ##          PA1 Communality
+    ## ────────────────────────
+    ## Q20    0.940       0.883
+    ## Q21    0.920       0.846
+    ## Q19    0.900       0.810
+    ## Q17_1  0.570       0.324
+    ## ────────────────────────
+    ## Communality = Sum of Squared (SS) Factor Loadings
+    ## (Uniqueness = 1 - Communality)
+
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->

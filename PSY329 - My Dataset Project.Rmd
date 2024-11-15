@@ -1,7 +1,7 @@
 ---
-title: "Lab 8"
+title: "Lab 10"
 author: "Jennifer Habicher"
-date: "2024-10-24"
+date: "2024-11-14"
 output: "github_document"
 ---
 
@@ -15,6 +15,7 @@ library (psych)
 library (car)
 library (multcomp)
 library (Rmisc)
+library (bruceR)
 
 #load Dataset
 load("ICPSR_38417/DS0001/38417-0001-Data.rda")
@@ -340,6 +341,18 @@ ggplot(Commitment_Model, aes(x = ANTIDEPRESSANT_USE, y = COMMITMENT, fill = GEND
 
 ```
 
-#Results
+# Reliability for Relationship Satisfaction
+```{r}
+#Cronbach's Alpha
+Alpha(Selected_Dataset, vars = c("Q17_1", "Q19", "Q20", "Q21"))
+
+```
+
+#Factor Analysis for Relationship Satisfaction
+```{r}
+#Factor Analysis
+EFA(Selected_Dataset, vars = c("Q17_1", "Q19", "Q20", "Q21"), method = "pa", plot.scree = TRUE, nfactors = c("parallel"))
+
+```
 
 
