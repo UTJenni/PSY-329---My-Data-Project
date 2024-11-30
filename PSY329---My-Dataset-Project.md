@@ -1,7 +1,7 @@
-Lab 10
+Research Project
 ================
 Jennifer Habicher
-2024-11-14
+2024-11-28
 
 # load packages and dataset
 
@@ -141,7 +141,9 @@ Selected_Dataset <- da38417.0001 %>%
 
 ``` r
 #Q17_1: Please indicate the level of happiness, all things considered, in your relationship 
-Selected_Dataset$Q17_1 <- dplyr::recode(Selected_Dataset$Q17_1, "(1) Extremely unhappy" = 1, "(2) Fairly unhappy" = 2, "(3) A little unhappy" = 3, "(4) Happy" = 4, "(5) Very happy" = 5, "(6) Extremely happy" = 6, "(7) Perfect" = 7)
+
+#Recoding Extremely Happy and Perfect to both read 6 to keep the composite variable the same
+Selected_Dataset$Q17_1 <- dplyr::recode(Selected_Dataset$Q17_1, "(1) Extremely unhappy" = 1, "(2) Fairly unhappy" = 2, "(3) A little unhappy" = 3, "(4) Happy" = 4, "(5) Very happy" = 5, "(6) Extremely happy" = 6, "(7) Perfect" = 6)
 
 #Q19: I have a warm and comfortable relationship with my spouse/partner
 Selected_Dataset$Q19 <- dplyr::recode(Selected_Dataset$Q19, "(1) Not at all true" = 1, "(2) A little true" = 2, "(3) Somewhat true" = 3, "(4) Mostly true" = 4, "(5) Almost completely true" = 5, "(6) Completely true" = 6)
@@ -169,6 +171,7 @@ Selected_Dataset$GENDER <- droplevels(dplyr::recode(Selected_Dataset$D2, "(1) Ma
 
 #IDENTITY_1_R IDENTITY. Which of the following do you consider yourself to be? (select all that apply) 1. Heterosexual or "straight"
 Selected_Dataset$SEXUAL_IDENTITY <- droplevels(dplyr::recode(Selected_Dataset$IDENTITY_1_R, "(1) Heterosexual" = "Heterosexual", "(-99) Valid Non-Response" = "Other"))
+
 
 #Remove NA values
 Selected_Dataset <- na.omit(Selected_Dataset)
@@ -333,7 +336,7 @@ kruskal.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$GENDE
     ##  Kruskal-Wallis rank sum test
     ## 
     ## data:  Selected_Dataset$Relationship_Satisfaction by Selected_Dataset$GENDER
-    ## Kruskal-Wallis chi-squared = 2.5942, df = 3, p-value = 0.4585
+    ## Kruskal-Wallis chi-squared = 2.6366, df = 3, p-value = 0.4511
 
 ``` r
 kruskal.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$ANTIDEPRESSANT_USE)
@@ -343,7 +346,7 @@ kruskal.test(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$ANTID
     ##  Kruskal-Wallis rank sum test
     ## 
     ## data:  Selected_Dataset$Relationship_Satisfaction by Selected_Dataset$ANTIDEPRESSANT_USE
-    ## Kruskal-Wallis chi-squared = 0.6303, df = 1, p-value = 0.4272
+    ## Kruskal-Wallis chi-squared = 0.59248, df = 1, p-value = 0.4415
 
 ``` r
 kruskal.test(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$GENDER)
@@ -417,6 +420,326 @@ table(Selected_Dataset$GENDER, Selected_Dataset$ANTIDEPRESSANT_USE)
 Verified that now all groups have enough N to satisfy Central Limit
 Theorem.
 
+\#Make Graphs for each Variable
+
+``` r
+#Plot
+ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE, y = Relationship_Satisfaction, fill = GENDER)) +
+  geom_boxplot(outlier.shape = 16, outlier.colour = "black", outlier.size = 1) + 
+  labs(
+    title = "Relationship Satisfaction by Antidepressant Use",
+    x = "Antidepressant Use",
+    y = "Relationship Satisfaction"
+  ) +
+  theme_linedraw(base_size = 20) + 
+  theme(
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.text.x = element_text(size = 18, hjust = 1), 
+    axis.text.y = element_text(size = 18),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 15),
+    legend.position = "top",
+    legend.margin = margin(t = -5, b = -5), # Adjust top and bottom margin
+    legend.spacing.y = unit(0, "pt")       # Reduce vertical spacing between legend items
+
+  ) +
+  coord_cartesian(clip = 'off') + # Avoid clipping of axis labels if needed
+  expand_limits(y = c(min(Selected_Dataset$Relationship_Satisfaction), max(Selected_Dataset$Relationship_Satisfaction))) + # Ensures y-axis limits are fully shown
+  scale_y_continuous(
+    breaks = seq(min(Selected_Dataset$Relationship_Satisfaction), 
+                 max(Selected_Dataset$Relationship_Satisfaction), 
+                 by = 1) # Adjust the step size as needed
+  ) + scale_fill_manual( values = c("Men" = "red", "Women" = "orange", "Other"="blue") )
+```
+
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+``` r
+#Sexual Satisfaction
+ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE, y = SEXUAL_SATISFACTION, fill = GENDER)) + 
+  geom_boxplot(outlier.shape = 16, outlier.colour = "black", outlier.size = 1) + 
+  labs(
+    title = "Sexual Satisfaction by Antidepressant Use",
+    x = "Antidepressant Use",
+    y = "Sexual Satisfaction",
+  ) +
+  theme_linedraw(base_size = 20) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.text.x = element_text(size = 18, hjust = 1), 
+    axis.text.y = element_text(size = 18),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 15),
+    legend.position = "top",
+    legend.margin = margin(t = -5, b = -5), # Adjust top and bottom margin
+    legend.spacing.y = unit(0, "pt")       # Reduce vertical spacing between legend items
+  ) +
+  coord_cartesian(clip = 'off') + # Avoid clipping of axis labels if needed
+  expand_limits(y = c(1, 6)) + # Ensures y-axis limits are fully shown
+  scale_y_continuous(
+    breaks = seq(1, 6, by = 1) # Adjust the step size as needed
+  )+ scale_fill_manual( values = c("Men" = "red", "Women" = "orange", "Other"="blue") )
+```
+
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-9-2.png)<!-- -->
+
+``` r
+# Commitment
+
+ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE, y = COMMITMENT, fill = GENDER)) + 
+  geom_boxplot(outlier.shape = 16, outlier.colour = "black", outlier.size = 1) + 
+  labs(
+    title = "Commitment by Antidepressant Use",
+    x = "Antidepressant Use",
+    y = "Commitment",
+  ) +
+  theme_linedraw(base_size = 20) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.text.x = element_text(size = 18, hjust = 1), 
+    axis.text.y = element_text(size = 18),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 17),
+    legend.position = "top",
+    legend.margin = margin(t = -5, b = -5), # Adjust top and bottom margin
+    legend.spacing.y = unit(0, "pt")       # Reduce vertical spacing between legend items
+  ) +
+  coord_cartesian(clip = 'off') + # Avoid clipping of axis labels if needed
+  expand_limits(y = c(min(Selected_Dataset$COMMITMENT), max(Selected_Dataset$COMMITMENT))) + # Ensures y-axis limits are fully shown
+  scale_y_continuous(
+    breaks = seq(min(Selected_Dataset$COMMITMENT), 
+                 max(Selected_Dataset$COMMITMENT), 
+                 by = 1) # Adjust the step size as needed
+  )+ scale_fill_manual( values = c("Men" = "red", "Women" = "orange", "Other"="blue") )
+```
+
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-9-3.png)<!-- -->
+
+\#Make Graphs for each Variable wihtout other
+
+``` r
+#Plot
+# Filter the dataset to include only "Men" and "Women"
+Filtered_Dataset <- Selected_Dataset %>% 
+  filter(GENDER %in% c("Men", "Women"))
+
+# Plot
+ggplot(Filtered_Dataset, aes(x = ANTIDEPRESSANT_USE, y = Relationship_Satisfaction, fill = GENDER)) +
+  geom_boxplot(outlier.shape = 16, outlier.colour = "black", outlier.size = 1) + 
+  labs(
+    title = "Relationship Satisfaction by Antidepressant Use",
+    x = "Antidepressant Use",
+    y = "Relationship Satisfaction"
+  ) +
+  theme_linedraw(base_size = 20) + 
+  theme(
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.text.x = element_text(size = 18, hjust = 1), 
+    axis.text.y = element_text(size = 18),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 15),
+    legend.position = "top",
+    legend.margin = margin(t = -5, b = -5), # Adjust top and bottom margin
+    legend.spacing.y = unit(0, "pt")       # Reduce vertical spacing between legend items
+  ) +
+  coord_cartesian(clip = 'off') + # Avoid clipping of axis labels if needed
+  expand_limits(y = c(min(Filtered_Dataset$Relationship_Satisfaction), max(Filtered_Dataset$Relationship_Satisfaction))) + # Ensures y-axis limits are fully shown
+  scale_y_continuous(
+    breaks = seq(min(Filtered_Dataset$Relationship_Satisfaction), 
+                 max(Filtered_Dataset$Relationship_Satisfaction), 
+                 by = 1) # Adjust the step size as needed
+  ) + 
+  scale_fill_manual(values = c("Men" = "red", "Women" = "orange")) # Remove the color for "Other"
+```
+
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+``` r
+#Sexual Satisfaction
+ggplot(Filtered_Dataset, aes(x = ANTIDEPRESSANT_USE, y = SEXUAL_SATISFACTION, fill = GENDER)) + 
+  geom_boxplot(outlier.shape = 16, outlier.colour = "black", outlier.size = 1) + 
+  labs(
+    title = "Sexual Satisfaction by Antidepressant Use",
+    x = "Antidepressant Use",
+    y = "Sexual Satisfaction",
+  ) +
+  theme_linedraw(base_size = 20) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.text.x = element_text(size = 18, hjust = 1), 
+    axis.text.y = element_text(size = 18),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 15),
+    legend.position = "top",
+    legend.margin = margin(t = -5, b = -5), # Adjust top and bottom margin
+    legend.spacing.y = unit(0, "pt")       # Reduce vertical spacing between legend items
+  ) +
+  coord_cartesian(clip = 'off') + # Avoid clipping of axis labels if needed
+  expand_limits(y = c(1, 6)) + # Ensures y-axis limits are fully shown
+  scale_y_continuous(
+    breaks = seq(1, 6, by = 1) # Adjust the step size as needed
+  )+ scale_fill_manual( values = c("Men" = "red", "Women" = "orange") )
+```
+
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-10-2.png)<!-- -->
+
+``` r
+# Commitment
+
+ggplot(Filtered_Dataset, aes(x = ANTIDEPRESSANT_USE, y = COMMITMENT, fill = GENDER)) + 
+  geom_boxplot(outlier.shape = 16, outlier.colour = "black", outlier.size = 1) + 
+  labs(
+    title = "Commitment by Antidepressant Use",
+    x = "Antidepressant Use",
+    y = "Commitment",
+  ) +
+  theme_linedraw(base_size = 20) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.text.x = element_text(size = 18, hjust = 1), 
+    axis.text.y = element_text(size = 18),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 17),
+    legend.position = "top",
+    legend.margin = margin(t = -5, b = -5), # Adjust top and bottom margin
+    legend.spacing.y = unit(0, "pt")       # Reduce vertical spacing between legend items
+  ) +
+  coord_cartesian(clip = 'off') + # Avoid clipping of axis labels if needed
+  expand_limits(y = c(min(Filtered_Dataset$COMMITMENT), max(Filtered_Dataset$COMMITMENT))) + # Ensures y-axis limits are fully shown
+  scale_y_continuous(
+    breaks = seq(min(Filtered_Dataset$COMMITMENT), 
+                 max(Filtered_Dataset$COMMITMENT), 
+                 by = 1) # Adjust the step size as needed
+  )+ scale_fill_manual( values = c("Men" = "red", "Women" = "orange") )
+```
+
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-10-3.png)<!-- -->
+
+``` r
+# Filter the dataset to include only "Men" and "Women"
+Filtered_Dataset <- Selected_Dataset %>% 
+  filter(GENDER %in% c("Men", "Women"))
+
+# Plot density curves
+ggplot(Filtered_Dataset, aes(x = Relationship_Satisfaction, color = interaction(GENDER, ANTIDEPRESSANT_USE), fill = interaction(GENDER, ANTIDEPRESSANT_USE))) +
+  geom_density(alpha = 0.4) +  # Transparency for overlapping areas
+  labs(
+    title = "Density Plot of Relationship Satisfaction by Gender and Antidepressant Use",
+    x = "Relationship Satisfaction",
+    y = "Density"
+  ) +
+  theme_linedraw(base_size = 20) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.text.x = element_text(size = 18), 
+    axis.text.y = element_text(size = 18),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 15),
+    legend.position = "top",
+    legend.margin = margin(t = -5, b = -5), # Adjust top and bottom margin
+    legend.spacing.y = unit(0, "pt")       # Reduce vertical spacing between legend items
+  ) +
+  scale_color_manual(
+    values = c(
+      "Men.FALSE" = "blue", "Men.TRUE" = "darkblue",
+      "Women.FALSE" = "orange", "Women.TRUE" = "darkorange"
+    ),
+    labels = c(
+      "Men: No Antidepressant", "Men: Antidepressant",
+      "Women: No Antidepressant", "Women: Antidepressant"
+    )
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Men.FALSE" = "blue", "Men.TRUE" = "darkblue",
+      "Women.FALSE" = "orange", "Women.TRUE" = "darkorange"
+    ),
+    labels = c(
+      "Men: No Antidepressant", "Men: Antidepressant",
+      "Women: No Antidepressant", "Women: Antidepressant"
+    )
+  )
+```
+
+    ## Warning: No shared levels found between `names(values)` of the manual scale and the
+    ## data's colour values.
+
+    ## Warning: No shared levels found between `names(values)` of the manual scale and the
+    ## data's fill values.
+
+    ## Warning: No shared levels found between `names(values)` of the manual scale and the
+    ## data's colour values.
+
+    ## Warning: No shared levels found between `names(values)` of the manual scale and the
+    ## data's fill values.
+
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-10-4.png)<!-- -->
+
+``` r
+# Filter the dataset to include only "Men" and "Women"
+Filtered_Dataset <- Selected_Dataset %>% 
+  filter(GENDER %in% c("Men", "Women"))
+
+# Plot density curves as lines
+ggplot(Filtered_Dataset, aes(x = Relationship_Satisfaction, color = interaction(GENDER, ANTIDEPRESSANT_USE))) +
+  geom_density(size = 1.2) +  # Line size for better visibility
+  labs(
+    title = "Density Plot of Relationship Satisfaction by Gender and Antidepressant Use",
+    x = "Relationship Satisfaction",
+    y = "Density"
+  ) +
+  theme_linedraw(base_size = 20) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.text.x = element_text(size = 18), 
+    axis.text.y = element_text(size = 18),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 15),
+    legend.position = "top",
+    legend.margin = margin(t = -5, b = -5), # Adjust top and bottom margin
+    legend.spacing.y = unit(0, "pt")       # Reduce vertical spacing between legend items
+  ) +
+  scale_color_manual(
+    values = c(
+      "Men.FALSE" = "blue", "Men.TRUE" = "darkblue",
+      "Women.FALSE" = "orange", "Women.TRUE" = "darkorange"
+    ),
+    labels = c(
+      "Men: No Antidepressant", "Men: Antidepressant",
+      "Women: No Antidepressant", "Women: Antidepressant"
+    )
+  )
+```
+
+    ## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+    ## ℹ Please use `linewidth` instead.
+    ## This warning is displayed once every 8 hours.
+    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    ## generated.
+
+    ## Warning: No shared levels found between `names(values)` of the manual scale and the
+    ## data's colour values.
+    ## No shared levels found between `names(values)` of the manual scale and the
+    ## data's colour values.
+
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-10-5.png)<!-- -->
+
 \#Check for Equality of Variance
 
 ``` r
@@ -427,7 +750,7 @@ leveneTest(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$GENDER)
 
     ## Levene's Test for Homogeneity of Variance (center = median)
     ##         Df F value Pr(>F)
-    ## group    2  0.5282 0.5897
+    ## group    2  0.5126  0.599
     ##       3505
 
 ``` r
@@ -438,7 +761,7 @@ leveneTest(Selected_Dataset$Relationship_Satisfaction ~ Selected_Dataset$ANTIDEP
 
     ## Levene's Test for Homogeneity of Variance (center = median)
     ##         Df F value Pr(>F)
-    ## group    1  0.5837 0.4449
+    ## group    1  0.6753 0.4113
     ##       3506
 
 ``` r
@@ -527,6 +850,84 @@ leveneTest(Selected_Dataset$COMMITMENT ~ Selected_Dataset$GENDER)
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
+``` r
+#Summarize Data
+summary(Selected_Dataset)
+```
+
+    ##      Q17_1            Q19             Q20             Q21       
+    ##  Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   :1.000  
+    ##  1st Qu.:4.000   1st Qu.:4.000   1st Qu.:4.000   1st Qu.:4.000  
+    ##  Median :5.000   Median :5.000   Median :5.000   Median :5.000  
+    ##  Mean   :4.593   Mean   :4.921   Mean   :4.639   Mean   :4.689  
+    ##  3rd Qu.:6.000   3rd Qu.:6.000   3rd Qu.:6.000   3rd Qu.:6.000  
+    ##  Max.   :6.000   Max.   :6.000   Max.   :6.000   Max.   :6.000  
+    ##                                                                 
+    ##                               Q22      
+    ##  (-99) Valid Non-Response       :   0  
+    ##  (1) Not at all committed       :  18  
+    ##  (2) A little committed         :  40  
+    ##  (3) Somewhat committed         :  94  
+    ##  (4) Mostly committed           : 238  
+    ##  (5) Almost completely committed: 399  
+    ##  (6) Completely committed       :2719  
+    ##                                     Q117                            Q65      
+    ##  (-99) Valid Non-Response             :   0   (-99) Valid Non-Response:   0  
+    ##  (1) Very dissatisfied                : 455   (1) Yes                 : 651  
+    ##  (2) Somewhat dissatisfied            : 664   (2) No                  :2857  
+    ##  (3) Neither satisfied or dissatisfied: 445                                  
+    ##  (4) Somewhat satisfied               : 924                                  
+    ##  (5) Very satisfied                   :1020                                  
+    ##                                                                              
+    ##                                                        Q55E     
+    ##  (-99) Valid Non-Response                                :   0  
+    ##  (1) Rarely or none of the time (Less than 1 day)        :1950  
+    ##  (2) Some or a little of the time (1-2 days)             : 921  
+    ##  (3) Occasionally or a moderate amount of time (3-4 days): 411  
+    ##  (4) Most or all of the time (5-7 days)                  : 226  
+    ##                                                                 
+    ##                                                                 
+    ##                                                                                         D2      
+    ##  (-99) Valid Non-Response                                                                :   0  
+    ##  (1) Man                                                                                 :1722  
+    ##  (2) Woman                                                                               :1662  
+    ##  (3) Transgender                                                                         :  28  
+    ##  (5) Do not identify as any of the above (there is an option to specify at next question):  96  
+    ##                                                                                                 
+    ##                                                                                                 
+    ##                                                                                        HHR5     
+    ##  (-99) Valid Non-Response                                                                :   0  
+    ##  (1) Man                                                                                 :1900  
+    ##  (2) Woman                                                                               :1520  
+    ##  (3) Transgender                                                                         :  26  
+    ##  (5) Do not identify as any of the above (there is an option to specify at next question):  62  
+    ##                                                                                                 
+    ##                                                                                                 
+    ##                    IDENTITY_1_R    COMMITMENT    SEXUAL_SATISFACTION
+    ##  (-99) Valid Non-Response:1473   Min.   :0.000   Min.   :0.0000     
+    ##  (1) Heterosexual        :2035   1st Qu.:1.792   1st Qu.:0.6931     
+    ##                                  Median :1.792   Median :1.3863     
+    ##                                  Mean   :1.703   Mean   :1.1037     
+    ##                                  3rd Qu.:1.792   3rd Qu.:1.6094     
+    ##                                  Max.   :1.792   Max.   :1.6094     
+    ##                                                                     
+    ##  ANTIDEPRESSANT_USE     DEPRESSION_LEVEL   GENDER         SEXUAL_IDENTITY
+    ##  Yes: 651           Rarely/None :1950    Men  :1722   Other       :1473  
+    ##  No :2857           Some        : 921    Women:1662   Heterosexual:2035  
+    ##                     Occasionally: 411    Other: 124                      
+    ##                     Most/All    : 226                                    
+    ##                                                                          
+    ##                                                                          
+    ##                                                                          
+    ##  Relationship_Satisfaction
+    ##  Min.   :1.000            
+    ##  1st Qu.:4.000            
+    ##  Median :5.000            
+    ##  Mean   :4.711            
+    ##  3rd Qu.:5.750            
+    ##  Max.   :6.000            
+    ## 
+
 \#Check Independent Observation Assumption
 
 Given the nature of the survey, I assume that they design of this survey
@@ -567,12 +968,12 @@ group_by(Selected_Dataset, GENDER, ANTIDEPRESSANT_USE) %>%
     ## # Groups:   GENDER [3]
     ##   GENDER ANTIDEPRESSANT_USE  mean    sd
     ##   <fct>  <fct>              <dbl> <dbl>
-    ## 1 Men    Yes                 4.51  1.27
-    ## 2 Men    No                  4.75  1.13
-    ## 3 Women  Yes                 4.77  1.12
-    ## 4 Women  No                  4.71  1.17
-    ## 5 Other  Yes                 4.82  1.12
-    ## 6 Other  No                  4.80  1.10
+    ## 1 Men    Yes                 4.50  1.25
+    ## 2 Men    No                  4.73  1.11
+    ## 3 Women  Yes                 4.75  1.10
+    ## 4 Women  No                  4.70  1.16
+    ## 5 Other  Yes                 4.81  1.11
+    ## 6 Other  No                  4.79  1.09
 
 ``` r
 #2x3 MANOVA
@@ -582,10 +983,10 @@ summary(Satisfaction_Model)
 ```
 
     ##                             Df Sum Sq Mean Sq F value Pr(>F)  
-    ## GENDER                       2      1   0.484   0.365 0.6940  
-    ## ANTIDEPRESSANT_USE           1      2   1.508   1.140 0.2858  
-    ## GENDER:ANTIDEPRESSANT_USE    2     10   5.223   3.946 0.0194 *
-    ## Residuals                 3502   4635   1.324                 
+    ## GENDER                       2      1   0.500   0.390 0.6774  
+    ## ANTIDEPRESSANT_USE           1      1   1.409   1.099 0.2946  
+    ## GENDER:ANTIDEPRESSANT_USE    2     10   5.003   3.900 0.0203 *
+    ## Residuals                 3502   4492   1.283                 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -600,33 +1001,155 @@ TukeyHSD(Satisfaction_Model, which = "GENDER:ANTIDEPRESSANT_USE")
     ## Fit: aov(formula = Relationship_Satisfaction ~ GENDER * ANTIDEPRESSANT_USE, data = Selected_Dataset)
     ## 
     ## $`GENDER:ANTIDEPRESSANT_USE`
-    ##                            diff          lwr        upr     p adj
-    ## Women:Yes-Men:Yes    0.26207462 -0.016612113 0.54076136 0.0792162
-    ## Other:Yes-Men:Yes    0.31685429 -0.226148103 0.85985668 0.5560028
-    ## Men:No-Men:Yes       0.24216174  0.002535635 0.48178785 0.0459046
-    ## Women:No-Men:Yes     0.20575661 -0.036657553 0.44817078 0.1494779
-    ## Other:No-Men:Yes     0.29611565 -0.133764010 0.72599532 0.3633898
-    ## Other:Yes-Women:Yes  0.05477967 -0.466707014 0.57626635 0.9996785
-    ## Men:No-Women:Yes    -0.01991288 -0.205701553 0.16587579 0.9996452
-    ## Women:No-Women:Yes  -0.05631801 -0.245689041 0.13305302 0.9583930
-    ## Other:No-Women:Yes   0.03404103 -0.368318615 0.43640068 0.9998891
-    ## Men:No-Other:Yes    -0.07469255 -0.576392392 0.42700729 0.9982511
-    ## Women:No-Other:Yes  -0.11109768 -0.614135142 0.39193978 0.9888337
-    ## Other:No-Other:Yes  -0.02073864 -0.636432218 0.59495495 0.9999989
-    ## Women:No-Men:No     -0.03640513 -0.161368168 0.08855791 0.9618868
-    ## Other:No-Men:No      0.05395391 -0.322407163 0.43031499 0.9985418
-    ## Other:No-Women:No    0.09035904 -0.287783279 0.46850136 0.9840372
+    ##                            diff           lwr        upr     p adj
+    ## Women:Yes-Men:Yes    0.25732147 -0.0170276678 0.53167060 0.0806699
+    ## Other:Yes-Men:Yes    0.31600467 -0.2185461949 0.85055554 0.5414529
+    ## Men:No-Men:Yes       0.23642908  0.0005326143 0.47232554 0.0491012
+    ## Women:No-Men:Yes     0.20188923 -0.0367518979 0.44053035 0.1521785
+    ## Other:No-Men:Yes     0.29100467 -0.1321841570 0.71419350 0.3653964
+    ## Other:Yes-Women:Yes  0.05868321 -0.4546868292 0.57205324 0.9995139
+    ## Men:No-Women:Yes    -0.02089239 -0.2037893660 0.16200458 0.9995156
+    ## Women:No-Women:Yes  -0.05543224 -0.2418558151 0.13099134 0.9584223
+    ## Other:No-Women:Yes   0.03368321 -0.3624139393 0.42978035 0.9998863
+    ## Men:No-Other:Yes    -0.07957560 -0.5734667652 0.41431557 0.9974473
+    ## Women:No-Other:Yes  -0.11411545 -0.6093234140 0.38109252 0.9864507
+    ## Other:No-Other:Yes  -0.02500000 -0.6311106592 0.58111066 0.9999969
+    ## Women:No-Men:No     -0.03453985 -0.1575579070 0.08847821 0.9674733
+    ## Other:No-Men:No      0.05457560 -0.3159276308 0.42507882 0.9983383
+    ## Other:No-Women:No    0.08911545 -0.2831413046 0.46137220 0.9839054
 
 ``` r
-#Plot
-ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE, y = Relationship_Satisfaction, fill = GENDER)
-       ) + geom_boxplot() + labs(title = "Relationship Satisfaction by Antidepressant Use", x = "Antidepressant Use", y = "Relationship Satisfaction")
+pairwise.t.test(Selected_Dataset$Relationship_Satisfaction, 
+                interaction(Selected_Dataset$GENDER, Selected_Dataset$ANTIDEPRESSANT_USE),
+                p.adjust.method = "bonferroni")
 ```
 
-![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+    ## 
+    ##  Pairwise comparisons using t tests with pooled SD 
+    ## 
+    ## data:  Selected_Dataset$Relationship_Satisfaction and interaction(Selected_Dataset$GENDER, Selected_Dataset$ANTIDEPRESSANT_USE) 
+    ## 
+    ##           Men.Yes Women.Yes Other.Yes Men.No Women.No
+    ## Women.Yes 0.113   -         -         -      -       
+    ## Other.Yes 1.000   1.000     -         -      -       
+    ## Men.No    0.064   1.000     1.000     -      -       
+    ## Women.No  0.239   1.000     1.000     1.000  -       
+    ## Other.No  0.750   1.000     1.000     1.000  1.000   
+    ## 
+    ## P value adjustment method: bonferroni
+
+``` r
+# Create the violin plot
+ggplot(Selected_Dataset, aes(x = interaction(GENDER, ANTIDEPRESSANT_USE), 
+                              y = Relationship_Satisfaction, 
+                              fill = ANTIDEPRESSANT_USE)) +
+  geom_violin(trim = FALSE, alpha = 0.7) +  # Violin plot
+  geom_boxplot(width = 0.1, position = position_dodge(0.9), outlier.shape = NA) +  # Add boxplot inside
+  stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +  # Add mean points
+  labs(
+    title = "Distribution of Relationship Satisfaction by Gender and Antidepressant Use",
+    x = "Gender and Antidepressant Use",
+    y = "Relationship Satisfaction"
+  ) +
+  scale_fill_manual(values = c("#FF9999", "#99CCFF")) +  # Customize fill colors
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.title = element_blank()
+  )
+```
+
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+``` r
+# Calculate summary statistics
+summary_stats <- Selected_Dataset %>%
+  group_by(GENDER, ANTIDEPRESSANT_USE) %>%
+  summarise(
+    mean_satisfaction = mean(Relationship_Satisfaction, na.rm = TRUE),
+    sd_satisfaction = sd(Relationship_Satisfaction, na.rm = TRUE),
+    n = n()
+  ) %>%
+  mutate(
+    se = sd_satisfaction / sqrt(n),  # Standard Error
+    ci = qt(0.975, df = n - 1) * se  # 95% Confidence Interval
+  )
+```
+
+    ## `summarise()` has grouped output by 'GENDER'. You can override using the
+    ## `.groups` argument.
+
+``` r
+# Create the bar graph
+ggplot(summary_stats, aes(x = interaction(GENDER, ANTIDEPRESSANT_USE), 
+                          y = mean_satisfaction, 
+                          fill = ANTIDEPRESSANT_USE)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9), alpha = 0.8) +
+  geom_errorbar(aes(ymin = mean_satisfaction - se, ymax = mean_satisfaction + se), 
+                width = 0.2, position = position_dodge(width = 0.9)) +
+  labs(
+    title = "Mean Relationship Satisfaction by Gender and Antidepressant Use",
+    x = "Gender and Antidepressant Use",
+    y = "Mean Relationship Satisfaction"
+  ) +
+  scale_fill_manual(values = c("#FF9999", "#99CCFF")) +  # Customize bar colors
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.title = element_blank()
+  )
+```
+
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-15-2.png)<!-- -->
+
+``` r
+ggplot(summary_stats, aes(x = interaction(GENDER, ANTIDEPRESSANT_USE), 
+                          y = mean_satisfaction, 
+                          color = ANTIDEPRESSANT_USE)) +
+  geom_point(size = 4, position = position_dodge(width = 0.5)) +  # Mean points
+  geom_errorbar(aes(ymin = mean_satisfaction - se, ymax = mean_satisfaction + se), 
+                width = 0.2, position = position_dodge(width = 0.5)) +
+  labs(
+    title = "Mean Relationship Satisfaction by Gender and Antidepressant Use",
+    x = "Gender and Antidepressant Use",
+    y = "Mean Relationship Satisfaction"
+  ) +
+  scale_color_manual(values = c("#FF9999", "#99CCFF")) +  # Customize colors
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.title = element_blank()
+  )
+```
+
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-15-3.png)<!-- -->
+
+``` r
+# Create the box plot with jittered points
+ggplot(Selected_Dataset, aes(x = interaction(GENDER, ANTIDEPRESSANT_USE), 
+                              y = Relationship_Satisfaction, 
+                              fill = ANTIDEPRESSANT_USE)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.7, width = 0.5, position = position_dodge(width = 0.9)) +  # Boxplot
+  geom_jitter(aes(color = ANTIDEPRESSANT_USE), 
+              width = 0.2, alpha = 0.5, size = 1.5) +  # Jittered points
+  labs(
+    title = "Relationship Satisfaction by Gender and Antidepressant Use",
+    x = "Gender and Antidepressant Use",
+    y = "Relationship Satisfaction"
+  ) +
+  scale_fill_manual(values = c("#FF9999", "#99CCFF")) +  # Customize fill colors
+  scale_color_manual(values = c("#CC6666", "#6699CC")) +  # Customize jitter colors
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.title = element_blank()
+  )
+```
+
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-15-4.png)<!-- -->
 Results: Main Effects are not significant - Fail to reject the null
 hypothesis. At least one Interaction between Anti-Depressant Use and
-Gender is significant p = .0459046
+Gender is significant p = .049046
 
 ``` r
 #Sexual Satisfaction
@@ -697,14 +1220,6 @@ TukeyHSD(Sexual_Satisfaction_Model, which = "GENDER:ANTIDEPRESSANT_USE")
     ## Other:No-Women:No   -0.010198950 -0.185022085 0.16462418 0.9999824
 
 ``` r
-#Plot
-ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE, y = SEXUAL_SATISFACTION, fill = GENDER)
-       ) + geom_boxplot() + labs(title = "Sexual Satisfaction by Antidepressant Use", x = "Antidepressant Use", y = "Sexual Satisfaction")
-```
-
-![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
-
-``` r
 #Commitment
 
 #descriptive Statistics
@@ -772,14 +1287,6 @@ TukeyHSD(Commitment_Model, which = "GENDER:ANTIDEPRESSANT_USE")
     ## Other:No-Men:No     -0.027491898 -0.100504673 0.045520877 0.8919590
     ## Other:No-Women:No   -0.046710889 -0.120069219 0.026647442 0.4557231
 
-``` r
-#Plot
-ggplot(Commitment_Model, aes(x = ANTIDEPRESSANT_USE, y = COMMITMENT, fill = GENDER)
-       ) + geom_boxplot() + labs(title = "Commitment by Antidepressant Use", x = "Antidepressant Use", y = "Relationship Satisfaction")
-```
-
-![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
-
 # Reliability for Relationship Satisfaction
 
 ``` r
@@ -792,23 +1299,23 @@ Alpha(Selected_Dataset, vars = c("Q17_1", "Q19", "Q20", "Q21"))
     ## 
     ## Summary:
     ## Total Items: 4
-    ## Scale Range: 1 ~ 7
+    ## Scale Range: 1 ~ 6
     ## Total Cases: 3508
     ## Valid Cases: 3508 (100.0%)
     ## 
     ## Scale Statistics:
-    ## Mean = 4.726
-    ## S.D. = 1.151
+    ## Mean = 4.711
+    ## S.D. = 1.133
     ## Cronbach’s α = 0.885
-    ## McDonald’s ω = 0.907
+    ## McDonald’s ω = 0.905
     ## 
     ## Item Statistics (Cronbach’s α If Item Deleted):
     ## ────────────────────────────────────────────────
     ##         Mean    S.D. Item-Rest Cor. Cronbach’s α
     ## ────────────────────────────────────────────────
-    ## Q17_1  4.653 (1.565)          0.553        0.943
-    ## Q19    4.921 (1.243)          0.824        0.826
-    ## Q20    4.639 (1.267)          0.848        0.816
+    ## Q17_1  4.593 (1.491)          0.540        0.943
+    ## Q19    4.921 (1.243)          0.828        0.824
+    ## Q20    4.639 (1.267)          0.848        0.815
     ## Q21    4.689 (1.239)          0.837        0.821
     ## ────────────────────────────────────────────────
     ## Item-Rest Cor. = Corrected Item-Total Correlation
@@ -825,7 +1332,7 @@ EFA(Selected_Dataset, vars = c("Q17_1", "Q19", "Q20", "Q21"), method = "pa", plo
     ## 
     ## Summary:
     ## Total Items: 4
-    ## Scale Range: 1 ~ 7
+    ## Scale Range: 1 ~ 6
     ## Total Cases: 3508
     ## Valid Cases: 3508 (100.0%)
     ## 
@@ -835,29 +1342,96 @@ EFA(Selected_Dataset, vars = c("Q17_1", "Q19", "Q20", "Q21"), method = "pa", plo
     ## - (Only one component was extracted. The solution was not rotated.)
     ## 
     ## KMO and Bartlett's Test:
-    ## - Kaiser-Meyer-Olkin (KMO) Measure of Sampling Adequacy: MSA = 0.821
-    ## - Bartlett's Test of Sphericity: Approx. χ²(6) = 11037.33, p < 1e-99 ***
+    ## - Kaiser-Meyer-Olkin (KMO) Measure of Sampling Adequacy: MSA = 0.819
+    ## - Bartlett's Test of Sphericity: Approx. χ²(6) = 10967.22, p < 1e-99 ***
     ## 
     ## Total Variance Explained:
     ## ───────────────────────────────────────────────────────────────────────────────
     ##           Eigenvalue Variance % Cumulative % SS Loading Variance % Cumulative %
     ## ───────────────────────────────────────────────────────────────────────────────
-    ## Factor 1       3.087     77.163       77.163      2.863     71.574       71.574
-    ## Factor 2       0.605     15.132       92.295                                   
-    ## Factor 3       0.182      4.555       96.850                                   
-    ## Factor 4       0.126      3.150      100.000                                   
+    ## Factor 1       3.071     76.770       76.770      2.848     71.189       71.189
+    ## Factor 2       0.621     15.528       92.298                                   
+    ## Factor 3       0.182      4.553       96.851                                   
+    ## Factor 4       0.126      3.149      100.000                                   
     ## ───────────────────────────────────────────────────────────────────────────────
     ## 
     ## Factor Loadings (Sorted by Size):
     ## ────────────────────────
     ##          PA1 Communality
     ## ────────────────────────
-    ## Q20    0.940       0.883
-    ## Q21    0.920       0.846
-    ## Q19    0.900       0.810
-    ## Q17_1  0.570       0.324
+    ## Q20    0.939       0.882
+    ## Q21    0.918       0.843
+    ## Q19    0.902       0.813
+    ## Q17_1  0.556       0.309
     ## ────────────────────────
     ## Communality = Sum of Squared (SS) Factor Loadings
     ## (Uniqueness = 1 - Communality)
 
-![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+
+\#Additional Graphs for Poster
+
+``` r
+#Pie Chart - Genders
+pct <- round(100*table(Selected_Dataset$GENDER)/length(Selected_Dataset$GENDER), 1)
+table(Selected_Dataset$GENDER)
+```
+
+    ## 
+    ##   Men Women Other 
+    ##  1722  1662   124
+
+``` r
+GenderLabels <- c("Men", "Women", "Other")
+GenderColors <- c("white", "lightblue", "grey")
+pie(table(Selected_Dataset$GENDER), 
+    labels = paste(GenderLabels, sep = " ", pct, "%"),
+    main = "Gender",
+   col = GenderColors,
+    cex = 1.7,
+    cex.main = 2.5)
+```
+
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+``` r
+#Pie Chart - Sexual Orientation
+pct <- round(100*table(Selected_Dataset$SEXUAL_IDENTITY)/length(Selected_Dataset$SEXUAL_IDENTITY), 1)
+table(Selected_Dataset$SEXUAL_IDENTITY)
+```
+
+    ## 
+    ##        Other Heterosexual 
+    ##         1473         2035
+
+``` r
+SexualLabels <- c("Other", "Heterosexual")
+pie(table(Selected_Dataset$SEXUAL_IDENTITY), 
+    labels = paste(SexualLabels, sep = " ", pct, "%"),
+    main = "Sexual Orientation",
+    cex = 1.7,
+     cex.main = 2.5)
+```
+
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-20-2.png)<!-- -->
+
+``` r
+#Pie Chart - Antidepressant Use
+pct <- round(100*table(Selected_Dataset$ANTIDEPRESSANT_USE)/length(Selected_Dataset$ANTIDEPRESSANT_USE), 1)
+table(Selected_Dataset$ANTIDEPRESSANT_USE)
+```
+
+    ## 
+    ##  Yes   No 
+    ##  651 2857
+
+``` r
+AntidepressantLabels <- c("Yes", "No")
+pie(table(Selected_Dataset$ANTIDEPRESSANT_USE), 
+    labels = paste(AntidepressantLabels, sep = " ", pct, "%"),
+    main = "Antidepressant Use",
+        cex = 1.7, 
+    cex.main = 2.5)
+```
+
+![](PSY329---My-Dataset-Project_files/figure-gfm/unnamed-chunk-20-3.png)<!-- -->

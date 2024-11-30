@@ -1,7 +1,7 @@
 ---
-title: "Lab 10"
+title: "Research Project"
 author: "Jennifer Habicher"
-date: "2024-11-14"
+date: "2024-11-28"
 output: "github_document"
 ---
 
@@ -30,7 +30,9 @@ Selected_Dataset <- da38417.0001 %>%
 # Recode Variables
 ```{r}
 #Q17_1: Please indicate the level of happiness, all things considered, in your relationship 
-Selected_Dataset$Q17_1 <- dplyr::recode(Selected_Dataset$Q17_1, "(1) Extremely unhappy" = 1, "(2) Fairly unhappy" = 2, "(3) A little unhappy" = 3, "(4) Happy" = 4, "(5) Very happy" = 5, "(6) Extremely happy" = 6, "(7) Perfect" = 7)
+
+#Recoding Extremely Happy and Perfect to both read 6 to keep the composite variable the same
+Selected_Dataset$Q17_1 <- dplyr::recode(Selected_Dataset$Q17_1, "(1) Extremely unhappy" = 1, "(2) Fairly unhappy" = 2, "(3) A little unhappy" = 3, "(4) Happy" = 4, "(5) Very happy" = 5, "(6) Extremely happy" = 6, "(7) Perfect" = 6)
 
 #Q19: I have a warm and comfortable relationship with my spouse/partner
 Selected_Dataset$Q19 <- dplyr::recode(Selected_Dataset$Q19, "(1) Not at all true" = 1, "(2) A little true" = 2, "(3) Somewhat true" = 3, "(4) Mostly true" = 4, "(5) Almost completely true" = 5, "(6) Completely true" = 6)
@@ -58,6 +60,7 @@ Selected_Dataset$GENDER <- droplevels(dplyr::recode(Selected_Dataset$D2, "(1) Ma
 
 #IDENTITY_1_R IDENTITY. Which of the following do you consider yourself to be? (select all that apply) 1. Heterosexual or "straight"
 Selected_Dataset$SEXUAL_IDENTITY <- droplevels(dplyr::recode(Selected_Dataset$IDENTITY_1_R, "(1) Heterosexual" = "Heterosexual", "(-99) Valid Non-Response" = "Other"))
+
 
 #Remove NA values
 Selected_Dataset <- na.omit(Selected_Dataset)
@@ -160,6 +163,8 @@ ggplot(Selected_Dataset, aes(x = Relationship_Satisfaction)) + facet_wrap(~ANTID
 
 ```
 
+
+
 #Check Normality of Distribution for each variable
 
 ```{r}
@@ -193,6 +198,282 @@ table(Selected_Dataset$GENDER, Selected_Dataset$ANTIDEPRESSANT_USE)
 Verified that now all groups have enough N to satisfy Central Limit Theorem. 
 
 
+#Make Graphs for each Variable
+```{r}
+#Plot
+ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE, y = Relationship_Satisfaction, fill = GENDER)) +
+  geom_boxplot(outlier.shape = 16, outlier.colour = "black", outlier.size = 1) + 
+  labs(
+    title = "Relationship Satisfaction by Antidepressant Use",
+    x = "Antidepressant Use",
+    y = "Relationship Satisfaction"
+  ) +
+  theme_linedraw(base_size = 20) + 
+  theme(
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.text.x = element_text(size = 18, hjust = 1), 
+    axis.text.y = element_text(size = 18),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 15),
+    legend.position = "top",
+    legend.margin = margin(t = -5, b = -5), # Adjust top and bottom margin
+    legend.spacing.y = unit(0, "pt")       # Reduce vertical spacing between legend items
+
+  ) +
+  coord_cartesian(clip = 'off') + # Avoid clipping of axis labels if needed
+  expand_limits(y = c(min(Selected_Dataset$Relationship_Satisfaction), max(Selected_Dataset$Relationship_Satisfaction))) + # Ensures y-axis limits are fully shown
+  scale_y_continuous(
+    breaks = seq(min(Selected_Dataset$Relationship_Satisfaction), 
+                 max(Selected_Dataset$Relationship_Satisfaction), 
+                 by = 1) # Adjust the step size as needed
+  ) + scale_fill_manual( values = c("Men" = "red", "Women" = "orange", "Other"="blue") )
+
+
+#Sexual Satisfaction
+ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE, y = SEXUAL_SATISFACTION, fill = GENDER)) + 
+  geom_boxplot(outlier.shape = 16, outlier.colour = "black", outlier.size = 1) + 
+  labs(
+    title = "Sexual Satisfaction by Antidepressant Use",
+    x = "Antidepressant Use",
+    y = "Sexual Satisfaction",
+  ) +
+  theme_linedraw(base_size = 20) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.text.x = element_text(size = 18, hjust = 1), 
+    axis.text.y = element_text(size = 18),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 15),
+    legend.position = "top",
+    legend.margin = margin(t = -5, b = -5), # Adjust top and bottom margin
+    legend.spacing.y = unit(0, "pt")       # Reduce vertical spacing between legend items
+  ) +
+  coord_cartesian(clip = 'off') + # Avoid clipping of axis labels if needed
+  expand_limits(y = c(1, 6)) + # Ensures y-axis limits are fully shown
+  scale_y_continuous(
+    breaks = seq(1, 6, by = 1) # Adjust the step size as needed
+  )+ scale_fill_manual( values = c("Men" = "red", "Women" = "orange", "Other"="blue") )
+
+# Commitment
+
+ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE, y = COMMITMENT, fill = GENDER)) + 
+  geom_boxplot(outlier.shape = 16, outlier.colour = "black", outlier.size = 1) + 
+  labs(
+    title = "Commitment by Antidepressant Use",
+    x = "Antidepressant Use",
+    y = "Commitment",
+  ) +
+  theme_linedraw(base_size = 20) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.text.x = element_text(size = 18, hjust = 1), 
+    axis.text.y = element_text(size = 18),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 17),
+    legend.position = "top",
+    legend.margin = margin(t = -5, b = -5), # Adjust top and bottom margin
+    legend.spacing.y = unit(0, "pt")       # Reduce vertical spacing between legend items
+  ) +
+  coord_cartesian(clip = 'off') + # Avoid clipping of axis labels if needed
+  expand_limits(y = c(min(Selected_Dataset$COMMITMENT), max(Selected_Dataset$COMMITMENT))) + # Ensures y-axis limits are fully shown
+  scale_y_continuous(
+    breaks = seq(min(Selected_Dataset$COMMITMENT), 
+                 max(Selected_Dataset$COMMITMENT), 
+                 by = 1) # Adjust the step size as needed
+  )+ scale_fill_manual( values = c("Men" = "red", "Women" = "orange", "Other"="blue") )
+
+```
+
+#Make Graphs for each Variable wihtout other
+```{r}
+#Plot
+# Filter the dataset to include only "Men" and "Women"
+Filtered_Dataset <- Selected_Dataset %>% 
+  filter(GENDER %in% c("Men", "Women"))
+
+# Plot
+ggplot(Filtered_Dataset, aes(x = ANTIDEPRESSANT_USE, y = Relationship_Satisfaction, fill = GENDER)) +
+  geom_boxplot(outlier.shape = 16, outlier.colour = "black", outlier.size = 1) + 
+  labs(
+    title = "Relationship Satisfaction by Antidepressant Use",
+    x = "Antidepressant Use",
+    y = "Relationship Satisfaction"
+  ) +
+  theme_linedraw(base_size = 20) + 
+  theme(
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.text.x = element_text(size = 18, hjust = 1), 
+    axis.text.y = element_text(size = 18),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 15),
+    legend.position = "top",
+    legend.margin = margin(t = -5, b = -5), # Adjust top and bottom margin
+    legend.spacing.y = unit(0, "pt")       # Reduce vertical spacing between legend items
+  ) +
+  coord_cartesian(clip = 'off') + # Avoid clipping of axis labels if needed
+  expand_limits(y = c(min(Filtered_Dataset$Relationship_Satisfaction), max(Filtered_Dataset$Relationship_Satisfaction))) + # Ensures y-axis limits are fully shown
+  scale_y_continuous(
+    breaks = seq(min(Filtered_Dataset$Relationship_Satisfaction), 
+                 max(Filtered_Dataset$Relationship_Satisfaction), 
+                 by = 1) # Adjust the step size as needed
+  ) + 
+  scale_fill_manual(values = c("Men" = "red", "Women" = "orange")) # Remove the color for "Other"
+
+
+#Sexual Satisfaction
+ggplot(Filtered_Dataset, aes(x = ANTIDEPRESSANT_USE, y = SEXUAL_SATISFACTION, fill = GENDER)) + 
+  geom_boxplot(outlier.shape = 16, outlier.colour = "black", outlier.size = 1) + 
+  labs(
+    title = "Sexual Satisfaction by Antidepressant Use",
+    x = "Antidepressant Use",
+    y = "Sexual Satisfaction",
+  ) +
+  theme_linedraw(base_size = 20) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.text.x = element_text(size = 18, hjust = 1), 
+    axis.text.y = element_text(size = 18),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 15),
+    legend.position = "top",
+    legend.margin = margin(t = -5, b = -5), # Adjust top and bottom margin
+    legend.spacing.y = unit(0, "pt")       # Reduce vertical spacing between legend items
+  ) +
+  coord_cartesian(clip = 'off') + # Avoid clipping of axis labels if needed
+  expand_limits(y = c(1, 6)) + # Ensures y-axis limits are fully shown
+  scale_y_continuous(
+    breaks = seq(1, 6, by = 1) # Adjust the step size as needed
+  )+ scale_fill_manual( values = c("Men" = "red", "Women" = "orange") )
+
+# Commitment
+
+ggplot(Filtered_Dataset, aes(x = ANTIDEPRESSANT_USE, y = COMMITMENT, fill = GENDER)) + 
+  geom_boxplot(outlier.shape = 16, outlier.colour = "black", outlier.size = 1) + 
+  labs(
+    title = "Commitment by Antidepressant Use",
+    x = "Antidepressant Use",
+    y = "Commitment",
+  ) +
+  theme_linedraw(base_size = 20) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.text.x = element_text(size = 18, hjust = 1), 
+    axis.text.y = element_text(size = 18),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 17),
+    legend.position = "top",
+    legend.margin = margin(t = -5, b = -5), # Adjust top and bottom margin
+    legend.spacing.y = unit(0, "pt")       # Reduce vertical spacing between legend items
+  ) +
+  coord_cartesian(clip = 'off') + # Avoid clipping of axis labels if needed
+  expand_limits(y = c(min(Filtered_Dataset$COMMITMENT), max(Filtered_Dataset$COMMITMENT))) + # Ensures y-axis limits are fully shown
+  scale_y_continuous(
+    breaks = seq(min(Filtered_Dataset$COMMITMENT), 
+                 max(Filtered_Dataset$COMMITMENT), 
+                 by = 1) # Adjust the step size as needed
+  )+ scale_fill_manual( values = c("Men" = "red", "Women" = "orange") )
+
+
+# Filter the dataset to include only "Men" and "Women"
+Filtered_Dataset <- Selected_Dataset %>% 
+  filter(GENDER %in% c("Men", "Women"))
+
+# Plot density curves
+ggplot(Filtered_Dataset, aes(x = Relationship_Satisfaction, color = interaction(GENDER, ANTIDEPRESSANT_USE), fill = interaction(GENDER, ANTIDEPRESSANT_USE))) +
+  geom_density(alpha = 0.4) +  # Transparency for overlapping areas
+  labs(
+    title = "Density Plot of Relationship Satisfaction by Gender and Antidepressant Use",
+    x = "Relationship Satisfaction",
+    y = "Density"
+  ) +
+  theme_linedraw(base_size = 20) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.text.x = element_text(size = 18), 
+    axis.text.y = element_text(size = 18),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 15),
+    legend.position = "top",
+    legend.margin = margin(t = -5, b = -5), # Adjust top and bottom margin
+    legend.spacing.y = unit(0, "pt")       # Reduce vertical spacing between legend items
+  ) +
+  scale_color_manual(
+    values = c(
+      "Men.FALSE" = "blue", "Men.TRUE" = "darkblue",
+      "Women.FALSE" = "orange", "Women.TRUE" = "darkorange"
+    ),
+    labels = c(
+      "Men: No Antidepressant", "Men: Antidepressant",
+      "Women: No Antidepressant", "Women: Antidepressant"
+    )
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Men.FALSE" = "blue", "Men.TRUE" = "darkblue",
+      "Women.FALSE" = "orange", "Women.TRUE" = "darkorange"
+    ),
+    labels = c(
+      "Men: No Antidepressant", "Men: Antidepressant",
+      "Women: No Antidepressant", "Women: Antidepressant"
+    )
+  )
+
+
+# Filter the dataset to include only "Men" and "Women"
+Filtered_Dataset <- Selected_Dataset %>% 
+  filter(GENDER %in% c("Men", "Women"))
+
+# Plot density curves as lines
+ggplot(Filtered_Dataset, aes(x = Relationship_Satisfaction, color = interaction(GENDER, ANTIDEPRESSANT_USE))) +
+  geom_density(size = 1.2) +  # Line size for better visibility
+  labs(
+    title = "Density Plot of Relationship Satisfaction by Gender and Antidepressant Use",
+    x = "Relationship Satisfaction",
+    y = "Density"
+  ) +
+  theme_linedraw(base_size = 20) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 18),
+    axis.title.y = element_text(size = 18),
+    axis.text.x = element_text(size = 18), 
+    axis.text.y = element_text(size = 18),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 15),
+    legend.position = "top",
+    legend.margin = margin(t = -5, b = -5), # Adjust top and bottom margin
+    legend.spacing.y = unit(0, "pt")       # Reduce vertical spacing between legend items
+  ) +
+  scale_color_manual(
+    values = c(
+      "Men.FALSE" = "blue", "Men.TRUE" = "darkblue",
+      "Women.FALSE" = "orange", "Women.TRUE" = "darkorange"
+    ),
+    labels = c(
+      "Men: No Antidepressant", "Men: Antidepressant",
+      "Women: No Antidepressant", "Women: Antidepressant"
+    )
+  )
+
+
+
+```
+
+
 #Check for Equality of Variance
 
 ```{r}
@@ -220,7 +501,6 @@ leveneTest(Selected_Dataset$COMMITMENT ~ Selected_Dataset$ANTIDEPRESSANT_USE)
 
 ```
 
-
 Sexual Satisfaction and Commitment do not pass the assumption of homogeneity of variance. I will do a log transformation of the data
 
 ```{r}
@@ -235,6 +515,11 @@ leveneTest(Selected_Dataset$SEXUAL_SATISFACTION ~ Selected_Dataset$GENDER)
 
 leveneTest(Selected_Dataset$COMMITMENT ~ Selected_Dataset$GENDER)
 
+```
+
+```{r}
+#Summarize Data
+summary(Selected_Dataset)
 ```
 
 #Check Independent Observation Assumption
@@ -275,21 +560,112 @@ summary(Satisfaction_Model)
 
 # Post Hoc
 TukeyHSD(Satisfaction_Model, which = "GENDER:ANTIDEPRESSANT_USE")
+pairwise.t.test(Selected_Dataset$Relationship_Satisfaction, 
+                interaction(Selected_Dataset$GENDER, Selected_Dataset$ANTIDEPRESSANT_USE),
+                p.adjust.method = "bonferroni")
 
-#Plot
-ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE, y = Relationship_Satisfaction, fill = GENDER)
-       ) + geom_boxplot() + labs(title = "Relationship Satisfaction by Antidepressant Use", x = "Antidepressant Use", y = "Relationship Satisfaction")
-                                  
 
+# Create the violin plot
+ggplot(Selected_Dataset, aes(x = interaction(GENDER, ANTIDEPRESSANT_USE), 
+                              y = Relationship_Satisfaction, 
+                              fill = ANTIDEPRESSANT_USE)) +
+  geom_violin(trim = FALSE, alpha = 0.7) +  # Violin plot
+  geom_boxplot(width = 0.1, position = position_dodge(0.9), outlier.shape = NA) +  # Add boxplot inside
+  stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +  # Add mean points
+  labs(
+    title = "Distribution of Relationship Satisfaction by Gender and Antidepressant Use",
+    x = "Gender and Antidepressant Use",
+    y = "Relationship Satisfaction"
+  ) +
+  scale_fill_manual(values = c("#FF9999", "#99CCFF")) +  # Customize fill colors
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.title = element_blank()
+  )
+
+
+
+
+# Calculate summary statistics
+summary_stats <- Selected_Dataset %>%
+  group_by(GENDER, ANTIDEPRESSANT_USE) %>%
+  summarise(
+    mean_satisfaction = mean(Relationship_Satisfaction, na.rm = TRUE),
+    sd_satisfaction = sd(Relationship_Satisfaction, na.rm = TRUE),
+    n = n()
+  ) %>%
+  mutate(
+    se = sd_satisfaction / sqrt(n),  # Standard Error
+    ci = qt(0.975, df = n - 1) * se  # 95% Confidence Interval
+  )
+
+# Create the bar graph
+ggplot(summary_stats, aes(x = interaction(GENDER, ANTIDEPRESSANT_USE), 
+                          y = mean_satisfaction, 
+                          fill = ANTIDEPRESSANT_USE)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9), alpha = 0.8) +
+  geom_errorbar(aes(ymin = mean_satisfaction - se, ymax = mean_satisfaction + se), 
+                width = 0.2, position = position_dodge(width = 0.9)) +
+  labs(
+    title = "Mean Relationship Satisfaction by Gender and Antidepressant Use",
+    x = "Gender and Antidepressant Use",
+    y = "Mean Relationship Satisfaction"
+  ) +
+  scale_fill_manual(values = c("#FF9999", "#99CCFF")) +  # Customize bar colors
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.title = element_blank()
+  )
+
+
+ggplot(summary_stats, aes(x = interaction(GENDER, ANTIDEPRESSANT_USE), 
+                          y = mean_satisfaction, 
+                          color = ANTIDEPRESSANT_USE)) +
+  geom_point(size = 4, position = position_dodge(width = 0.5)) +  # Mean points
+  geom_errorbar(aes(ymin = mean_satisfaction - se, ymax = mean_satisfaction + se), 
+                width = 0.2, position = position_dodge(width = 0.5)) +
+  labs(
+    title = "Mean Relationship Satisfaction by Gender and Antidepressant Use",
+    x = "Gender and Antidepressant Use",
+    y = "Mean Relationship Satisfaction"
+  ) +
+  scale_color_manual(values = c("#FF9999", "#99CCFF")) +  # Customize colors
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.title = element_blank()
+  )
+
+
+# Create the box plot with jittered points
+ggplot(Selected_Dataset, aes(x = interaction(GENDER, ANTIDEPRESSANT_USE), 
+                              y = Relationship_Satisfaction, 
+                              fill = ANTIDEPRESSANT_USE)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.7, width = 0.5, position = position_dodge(width = 0.9)) +  # Boxplot
+  geom_jitter(aes(color = ANTIDEPRESSANT_USE), 
+              width = 0.2, alpha = 0.5, size = 1.5) +  # Jittered points
+  labs(
+    title = "Relationship Satisfaction by Gender and Antidepressant Use",
+    x = "Gender and Antidepressant Use",
+    y = "Relationship Satisfaction"
+  ) +
+  scale_fill_manual(values = c("#FF9999", "#99CCFF")) +  # Customize fill colors
+  scale_color_manual(values = c("#CC6666", "#6699CC")) +  # Customize jitter colors
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.title = element_blank()
+  )
 ```
 Results: Main Effects are not significant - Fail to reject the null hypothesis.
-At least one Interaction between Anti-Depressant Use and Gender is significant p = .0459046
+At least one Interaction between Anti-Depressant Use and Gender is significant p = .049046
 
 
 
 
 ```{r}
-
 #Sexual Satisfaction
 
 #descriptive Statistics
@@ -306,17 +682,10 @@ summary(Sexual_Satisfaction_Model)
 
 # Post Hoc
 TukeyHSD(Sexual_Satisfaction_Model, which = "GENDER:ANTIDEPRESSANT_USE")
-
-#Plot
-ggplot(Selected_Dataset, aes(x = ANTIDEPRESSANT_USE, y = SEXUAL_SATISFACTION, fill = GENDER)
-       ) + geom_boxplot() + labs(title = "Sexual Satisfaction by Antidepressant Use", x = "Antidepressant Use", y = "Sexual Satisfaction")
-                                  
-
 ```
 
 
 ```{r}
-
 #Commitment
 
 #descriptive Statistics
@@ -333,19 +702,12 @@ summary(Commitment_Model)
 
 # Post Hoc
 TukeyHSD(Commitment_Model, which = "GENDER:ANTIDEPRESSANT_USE")
-
-#Plot
-ggplot(Commitment_Model, aes(x = ANTIDEPRESSANT_USE, y = COMMITMENT, fill = GENDER)
-       ) + geom_boxplot() + labs(title = "Commitment by Antidepressant Use", x = "Antidepressant Use", y = "Relationship Satisfaction")
-                                  
-
 ```
 
 # Reliability for Relationship Satisfaction
 ```{r}
 #Cronbach's Alpha
 Alpha(Selected_Dataset, vars = c("Q17_1", "Q19", "Q20", "Q21"))
-
 ```
 
 #Factor Analysis for Relationship Satisfaction
@@ -354,5 +716,47 @@ Alpha(Selected_Dataset, vars = c("Q17_1", "Q19", "Q20", "Q21"))
 EFA(Selected_Dataset, vars = c("Q17_1", "Q19", "Q20", "Q21"), method = "pa", plot.scree = TRUE, nfactors = c("parallel"))
 
 ```
+
+
+#Additional Graphs for Poster
+```{r}
+#Pie Chart - Genders
+pct <- round(100*table(Selected_Dataset$GENDER)/length(Selected_Dataset$GENDER), 1)
+table(Selected_Dataset$GENDER)
+
+GenderLabels <- c("Men", "Women", "Other")
+GenderColors <- c("white", "lightblue", "grey")
+pie(table(Selected_Dataset$GENDER), 
+    labels = paste(GenderLabels, sep = " ", pct, "%"),
+    main = "Gender",
+   col = GenderColors,
+    cex = 1.7,
+    cex.main = 2.5)
+
+#Pie Chart - Sexual Orientation
+pct <- round(100*table(Selected_Dataset$SEXUAL_IDENTITY)/length(Selected_Dataset$SEXUAL_IDENTITY), 1)
+table(Selected_Dataset$SEXUAL_IDENTITY)
+
+SexualLabels <- c("Other", "Heterosexual")
+pie(table(Selected_Dataset$SEXUAL_IDENTITY), 
+    labels = paste(SexualLabels, sep = " ", pct, "%"),
+    main = "Sexual Orientation",
+    cex = 1.7,
+     cex.main = 2.5)
+
+
+#Pie Chart - Antidepressant Use
+pct <- round(100*table(Selected_Dataset$ANTIDEPRESSANT_USE)/length(Selected_Dataset$ANTIDEPRESSANT_USE), 1)
+table(Selected_Dataset$ANTIDEPRESSANT_USE)
+
+AntidepressantLabels <- c("Yes", "No")
+pie(table(Selected_Dataset$ANTIDEPRESSANT_USE), 
+    labels = paste(AntidepressantLabels, sep = " ", pct, "%"),
+    main = "Antidepressant Use",
+        cex = 1.7, 
+    cex.main = 2.5)
+
+```
+
 
 
